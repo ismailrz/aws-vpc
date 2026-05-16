@@ -1,0 +1,104 @@
+<svg width="880" height="560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">VPC Endpoints — Private Access to AWS Services</text>
+
+  <!-- AWS Services cloud on right -->
+  <rect x="660" y="60" width="200" height="440" rx="12" fill="#FFF3E0" stroke="#FF6F00" stroke-width="2"/>
+  <text x="692" y="86" font-size="12" font-weight="bold" fill="#E65100">AWS Services</text>
+
+  <rect x="678" y="100" width="164" height="36" rx="6" fill="#FF9800"/>
+  <text x="730" y="122" font-size="11" font-weight="bold" fill="white">S3</text>
+
+  <rect x="678" y="148" width="164" height="36" rx="6" fill="#FF9800"/>
+  <text x="720" y="170" font-size="11" font-weight="bold" fill="white">DynamoDB</text>
+
+  <rect x="678" y="208" width="164" height="36" rx="6" fill="#1E88E5"/>
+  <text x="730" y="230" font-size="11" font-weight="bold" fill="white">SSM</text>
+
+  <rect x="678" y="256" width="164" height="36" rx="6" fill="#1E88E5"/>
+  <text x="706" y="278" font-size="11" font-weight="bold" fill="white">Secrets Manager</text>
+
+  <rect x="678" y="304" width="164" height="36" rx="6" fill="#1E88E5"/>
+  <text x="730" y="326" font-size="11" font-weight="bold" fill="white">KMS</text>
+
+  <rect x="678" y="352" width="164" height="36" rx="6" fill="#1E88E5"/>
+  <text x="706" y="374" font-size="11" font-weight="bold" fill="white">CloudWatch</text>
+
+  <rect x="678" y="400" width="164" height="36" rx="6" fill="#1E88E5"/>
+  <text x="706" y="422" font-size="11" font-weight="bold" fill="white">EC2 API / STS</text>
+
+  <text x="690" y="462" font-size="10" fill="#888">+ 90 more services</text>
+
+  <!-- VPC box -->
+  <rect x="18" y="60" width="610" height="480" rx="12" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="36" y="84" font-size="13" font-weight="bold" fill="#1565C0">VPC: 10.0.0.0/16</text>
+
+  <!-- Private Subnet -->
+  <rect x="36" y="96" width="576" height="160" rx="8" fill="#E8EAF6" stroke="#3F51B5" stroke-width="1.5"/>
+  <text x="52" y="116" font-size="11" font-weight="bold" fill="#283593">Private Subnet  10.0.11.0/24  (no IGW or NAT route)</text>
+
+  <!-- EC2 instances -->
+  <rect x="52" y="126" width="140" height="60" rx="6" fill="#1E88E5"/>
+  <text x="82" y="150" font-size="11" font-weight="bold" fill="white">EC2 / ECS</text>
+  <text x="62" y="166" font-size="9" fill="#BBDEFB">Needs S3, SSM, KMS</text>
+  <text x="62" y="180" font-size="9" fill="#BBDEFB">no public IP</text>
+
+  <rect x="210" y="126" width="140" height="60" rx="6" fill="#3F51B5"/>
+  <text x="240" y="150" font-size="11" font-weight="bold" fill="white">Lambda</text>
+  <text x="216" y="166" font-size="9" fill="#C5CAE9">VPC-attached</text>
+  <text x="216" y="180" font-size="9" fill="#C5CAE9">DynamoDB access</text>
+
+  <!-- Gateway Endpoint -->
+  <rect x="36" y="280" width="576" height="110" rx="8" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+  <text x="52" y="300" font-size="12" font-weight="bold" fill="#2E7D32">Gateway Endpoint  (FREE — Route Table entry)</text>
+  <text x="52" y="318" font-size="10" fill="#388E3C">Services: S3 and DynamoDB only  |  No ENI — uses prefix list in route table</text>
+
+  <rect x="52" y="326" width="260" height="52" rx="6" fill="#43A047"/>
+  <text x="80" y="348" font-size="10" font-weight="bold" fill="white">vpce-s3  (Gateway Endpoint)</text>
+  <text x="60" y="364" font-size="9" fill="#C8E6C9">Route: pl-68a54001 (S3) → vpce-xxx</text>
+  <text x="60" y="376" font-size="9" fill="#C8E6C9">Endpoint policy can restrict buckets</text>
+
+  <rect x="330" y="326" width="260" height="52" rx="6" fill="#66BB6A"/>
+  <text x="346" y="348" font-size="10" font-weight="bold" fill="white">vpce-dynamodb  (Gateway Endpoint)</text>
+  <text x="338" y="364" font-size="9" fill="#1B5E20">Route: pl-xxxxxxxx (DDB) → vpce-yyy</text>
+  <text x="338" y="376" font-size="9" fill="#1B5E20">Saves NAT GW data cost</text>
+
+  <!-- Interface Endpoint -->
+  <rect x="36" y="410" width="576" height="118" rx="8" fill="#FFF3E0" stroke="#FF6F00" stroke-width="2"/>
+  <text x="52" y="430" font-size="12" font-weight="bold" fill="#E65100">Interface Endpoint (PrivateLink) — ~$0.01/hr/AZ + $0.01/GB</text>
+  <text x="52" y="448" font-size="10" fill="#BF360C">Creates ENI with private IP in subnet  |  Private DNS resolves service name to private IP</text>
+
+  <rect x="52" y="456" width="170" height="60" rx="6" fill="#FF9800"/>
+  <text x="78" y="476" font-size="10" font-weight="bold" fill="white">vpce-ssm</text>
+  <text x="60" y="492" font-size="9" fill="#FFF8E1">ENI: 10.0.11.51</text>
+  <text x="60" y="506" font-size="9" fill="#FFF8E1">ssm.us-east-1.amazonaws.com</text>
+
+  <rect x="236" y="456" width="170" height="60" rx="6" fill="#F57C00"/>
+  <text x="254" y="476" font-size="10" font-weight="bold" fill="white">vpce-secretsmanager</text>
+  <text x="244" y="492" font-size="9" fill="#FFF8E1">ENI: 10.0.11.52</text>
+  <text x="244" y="506" font-size="9" fill="#FFF8E1">secretsmanager.region...</text>
+
+  <rect x="420" y="456" width="170" height="60" rx="6" fill="#EF6C00"/>
+  <text x="452" y="476" font-size="10" font-weight="bold" fill="white">vpce-kms</text>
+  <text x="428" y="492" font-size="9" fill="#FFF8E1">ENI: 10.0.11.53</text>
+  <text x="428" y="506" font-size="9" fill="#FFF8E1">kms.us-east-1.amazonaws.com</text>
+
+  <!-- Connection arrows from EC2 to endpoints -->
+  <line x1="122" y1="186" x2="122" y2="280" stroke="#43A047" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="122,280 116,269 128,269" fill="#43A047"/>
+  <line x1="122" y1="390" x2="122" y2="410" stroke="#FF9800" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="122,410 116,399 128,399" fill="#FF9800"/>
+
+  <!-- Arrow from gateway endpoint to S3 -->
+  <line x1="612" y1="118" x2="660" y2="118" stroke="#43A047" stroke-width="2.5"/>
+  <polygon points="660,118 648,112 648,124" fill="#43A047"/>
+  <text x="616" y="112" font-size="9" fill="#2E7D32">AWS</text>
+  <text x="612" y="124" font-size="9" fill="#2E7D32">backbone</text>
+
+  <!-- Arrow from interface endpoint to services -->
+  <line x1="612" y1="340" x2="660" y2="220" stroke="#FF9800" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="660,220 650,218 656,230" fill="#FF9800"/>
+
+  <!-- Arrow from interface endpoint to services 2 -->
+  <line x1="612" y1="490" x2="660" y2="340" stroke="#FF9800" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="660,340 650,340 656,352" fill="#FF9800"/>
+</svg>

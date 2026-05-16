@@ -1,0 +1,72 @@
+<svg width="880" height="600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">Security Groups &amp; Network ACLs — Layered Defense</text>
+
+  <!-- Outer: NACL Public -->
+  <rect x="20" y="50" width="840" height="235" rx="10" fill="#FFF3E0" stroke="#FF6F00" stroke-width="2.5" stroke-dasharray="10,4"/>
+  <text x="38" y="72" font-size="12" font-weight="bold" fill="#E65100">NACL: Public Subnet  (stateless — numbered rules, allow + deny)</text>
+
+  <!-- ALB box inside public subnet with SG -->
+  <rect x="50" y="86" width="760" height="180" rx="8" fill="#FFF8E1" stroke="#FFA000" stroke-width="1.5"/>
+  <text x="68" y="106" font-size="11" font-weight="bold" fill="#E65100">sg-alb  (Security Group — stateful, allow only)</text>
+
+  <rect x="68" y="116" width="220" height="68" rx="6" fill="#FF9800" stroke="#E65100" stroke-width="1.5"/>
+  <text x="100" y="138" font-size="12" font-weight="bold" fill="white">Application LB</text>
+  <text x="84" y="156" font-size="10" fill="#FFF8E1">Inbound:  443 from 0.0.0.0/0</text>
+  <text x="84" y="170" font-size="10" fill="#FFF8E1">Outbound: 8080 → sg-app</text>
+
+  <!-- NACL rules table for public -->
+  <rect x="320" y="116" width="460" height="140" rx="6" fill="white" stroke="#FFB300" stroke-width="1"/>
+  <text x="336" y="134" font-size="10" font-weight="bold" fill="#E65100">NACL Inbound Rules (Public Subnet)</text>
+  <line x1="320" y1="138" x2="780" y2="138" stroke="#FFB300" stroke-width="0.8"/>
+  <text x="330" y="152" font-size="9" fill="#333">Rule#  Protocol  Port         Source           Action</text>
+  <line x1="320" y1="156" x2="780" y2="156" stroke="#FFB300" stroke-width="0.5"/>
+  <text x="330" y="170" font-size="9" fill="#2E7D32">100    TCP        443          0.0.0.0/0        ALLOW</text>
+  <text x="330" y="184" font-size="9" fill="#2E7D32">110    TCP        80           0.0.0.0/0        ALLOW</text>
+  <text x="330" y="198" font-size="9" fill="#2E7D32">120    TCP        1024-65535   0.0.0.0/0        ALLOW</text>
+  <text x="330" y="212" font-size="9" fill="#1565C0">130    TCP        22           10.0.0.0/8       ALLOW</text>
+  <text x="330" y="226" font-size="9" fill="#C62828">*      ALL        ALL          0.0.0.0/0        DENY</text>
+  <text x="330" y="242" font-size="9" font-style="italic" fill="#888">Note: stateless — must allow ephemeral ports 1024-65535 for return traffic</text>
+
+  <!-- Arrow: ALB → App -->
+  <line x1="440" y1="286" x2="440" y2="316" stroke="#1E88E5" stroke-width="2.5"/>
+  <polygon points="440,316 434,305 446,305" fill="#1E88E5"/>
+  <text x="448" y="304" font-size="10" font-weight="bold" fill="#1565C0">port 8080</text>
+
+  <!-- Outer: NACL Private -->
+  <rect x="20" y="320" width="840" height="160" rx="10" fill="#E3F2FD" stroke="#1565C0" stroke-width="2.5" stroke-dasharray="10,4"/>
+  <text x="38" y="342" font-size="12" font-weight="bold" fill="#0D47A1">NACL: Private Subnet  (stateless)</text>
+
+  <!-- App Server SG inside private -->
+  <rect x="50" y="356" width="760" height="110" rx="8" fill="#E8EAF6" stroke="#3F51B5" stroke-width="1.5"/>
+  <text x="68" y="376" font-size="11" font-weight="bold" fill="#283593">sg-app  (Security Group)</text>
+
+  <rect x="68" y="386" width="220" height="64" rx="6" fill="#1E88E5" stroke="#1565C0" stroke-width="1.5"/>
+  <text x="106" y="408" font-size="12" font-weight="bold" fill="white">App Server</text>
+  <text x="84" y="426" font-size="10" fill="#BBDEFB">Inbound:  8080 from sg-alb</text>
+  <text x="84" y="440" font-size="10" fill="#BBDEFB">Outbound: 5432 → sg-db</text>
+
+  <rect x="320" y="356" width="460" height="100" rx="6" fill="white" stroke="#3F51B5" stroke-width="1"/>
+  <text x="336" y="374" font-size="10" font-weight="bold" fill="#283593">SG Reference — Why it's better than IP CIDRs</text>
+  <line x1="320" y1="378" x2="780" y2="378" stroke="#3F51B5" stroke-width="0.5"/>
+  <text x="330" y="394" font-size="10" fill="#333">sg-alb as source = ANY instance using sg-alb</text>
+  <text x="330" y="410" font-size="10" fill="#333">Scales automatically as fleet grows</text>
+  <text x="330" y="426" font-size="10" fill="#333">No IP address management needed</text>
+  <text x="330" y="442" font-size="10" fill="#2E7D32">&#x2714; Works across ASG scale-out without rule changes</text>
+
+  <!-- Arrow: App → DB -->
+  <line x1="440" y1="480" x2="440" y2="510" stroke="#E53935" stroke-width="2.5"/>
+  <polygon points="440,510 434,499 446,499" fill="#E53935"/>
+  <text x="448" y="498" font-size="10" font-weight="bold" fill="#B71C1C">port 5432</text>
+
+  <!-- Outer: NACL Isolated -->
+  <rect x="20" y="514" width="840" height="74" rx="10" fill="#FCE4EC" stroke="#C62828" stroke-width="2.5" stroke-dasharray="10,4"/>
+  <text x="38" y="534" font-size="12" font-weight="bold" fill="#B71C1C">NACL: Isolated Subnet  (stateless)</text>
+
+  <!-- DB SG -->
+  <rect x="50" y="544" width="760" height="36" rx="6" fill="#FFEBEE" stroke="#E53935" stroke-width="1.5"/>
+  <text x="68" y="560" font-size="11" font-weight="bold" fill="#B71C1C">sg-db  (Security Group)</text>
+  <text x="300" y="560" font-size="10" fill="#555">Inbound: 5432 from sg-app only  |  All other traffic: implicit DENY</text>
+
+  <!-- Key difference callout -->
+  <rect x="20" y="596" width="840" height="0" rx="0" fill="none"/>
+</svg>

@@ -1,0 +1,101 @@
+<svg width="880" height="560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <!-- Title -->
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">Internet Gateway &amp; NAT Gateway — Traffic Flows</text>
+
+  <!-- Internet cloud -->
+  <ellipse cx="440" cy="80" rx="130" ry="50" fill="#ECEFF1" stroke="#90A4AE" stroke-width="2"/>
+  <text x="375" y="76" font-size="13" font-weight="bold" fill="#546E7A">&#x1F310; Internet</text>
+  <text x="390" y="94" font-size="10" fill="#78909C">Public IPs only</text>
+
+  <!-- IGW -->
+  <rect x="335" y="152" width="210" height="44" rx="8" fill="#FF9800" stroke="#E65100" stroke-width="2"/>
+  <text x="358" y="170" font-size="12" font-weight="bold" fill="white">Internet Gateway (IGW)</text>
+  <text x="368" y="186" font-size="10" fill="#FFF8E1">1:1 NAT  |  No bandwidth limit</text>
+
+  <!-- Arrow: Internet <-> IGW -->
+  <line x1="440" y1="130" x2="440" y2="152" stroke="#FF9800" stroke-width="2.5"/>
+  <polygon points="440,130 435,142 445,142" fill="#FF9800"/>
+
+  <!-- VPC box -->
+  <rect x="20" y="216" width="840" height="320" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="38" y="238" font-size="13" font-weight="bold" fill="#1565C0">VPC: 10.0.0.0/16</text>
+
+  <!-- Public Subnet -->
+  <rect x="38" y="248" width="800" height="130" rx="8" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+  <text x="54" y="268" font-size="11" font-weight="bold" fill="#2E7D32">Public Subnet — 10.0.1.0/24</text>
+  <text x="54" y="284" font-size="10" fill="#388E3C">Route: 0.0.0.0/0 → igw-xxxxxxxx</text>
+
+  <!-- EC2 in public subnet -->
+  <rect x="60" y="294" width="160" height="68" rx="6" fill="#43A047" stroke="#2E7D32" stroke-width="1.5"/>
+  <text x="80" y="316" font-size="11" font-weight="bold" fill="white">EC2 Instance</text>
+  <text x="72" y="332" font-size="10" fill="#C8E6C9">Private: 10.0.1.10</text>
+  <text x="72" y="348" font-size="10" fill="#C8E6C9">Public:  52.14.x.x (EIP)</text>
+
+  <!-- NAT Gateway in public subnet -->
+  <rect x="340" y="294" width="180" height="68" rx="6" fill="#FF9800" stroke="#E65100" stroke-width="1.5"/>
+  <text x="372" y="316" font-size="11" font-weight="bold" fill="white">NAT Gateway</text>
+  <text x="352" y="332" font-size="10" fill="#FFF8E1">Private: 10.0.1.5</text>
+  <text x="352" y="348" font-size="10" fill="#FFF8E1">EIP:     54.22.x.x</text>
+
+  <!-- Flow A label -->
+  <text x="240" y="310" font-size="10" font-weight="bold" fill="#1B5E20">Flow A</text>
+  <text x="234" y="324" font-size="10" fill="#2E7D32">Public EC2</text>
+  <text x="234" y="338" font-size="10" fill="#2E7D32">→ IGW direct</text>
+
+  <!-- Private Subnet -->
+  <rect x="38" y="396" width="800" height="124" rx="8" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="54" y="416" font-size="11" font-weight="bold" fill="#1565C0">Private Subnet — 10.0.11.0/24</text>
+  <text x="54" y="432" font-size="10" fill="#1976D2">Route: 0.0.0.0/0 → nat-xxxxxxxx</text>
+
+  <!-- EC2 in private subnet -->
+  <rect x="60" y="442" width="160" height="60" rx="6" fill="#1E88E5" stroke="#1565C0" stroke-width="1.5"/>
+  <text x="80" y="464" font-size="11" font-weight="bold" fill="white">EC2 Instance</text>
+  <text x="72" y="480" font-size="10" fill="#BBDEFB">Private: 10.0.11.25</text>
+  <text x="72" y="496" font-size="10" fill="#BBDEFB">No public IP</text>
+
+  <!-- Flow B label -->
+  <text x="240" y="460" font-size="10" font-weight="bold" fill="#0D47A1">Flow B</text>
+  <text x="234" y="474" font-size="10" fill="#1565C0">Private EC2</text>
+  <text x="234" y="488" font-size="10" fill="#1565C0">→ NAT GW</text>
+
+  <!-- === ARROWS === -->
+
+  <!-- Flow A: EC2-public → IGW → Internet (left path) -->
+  <line x1="140" y1="294" x2="140" y2="196" stroke="#43A047" stroke-width="2.5"/>
+  <polygon points="140,196 135,208 145,208" fill="#43A047"/>
+  <text x="148" y="240" font-size="10" fill="#2E7D32">src=52.14.x.x</text>
+  <text x="148" y="254" font-size="10" fill="#2E7D32">dst=8.8.8.8</text>
+
+  <!-- Flow A: IGW → Internet -->
+  <line x1="360" y1="152" x2="340" y2="130" stroke="#43A047" stroke-width="2"/>
+  <polygon points="340,130 338,142 348,136" fill="#43A047"/>
+
+  <!-- Flow B: EC2-private → NAT GW -->
+  <line x1="220" y1="472" x2="340" y2="360" stroke="#1E88E5" stroke-width="2.5"/>
+  <polygon points="340,360 330,368 340,372" fill="#1E88E5"/>
+
+  <!-- Flow B: NAT GW → IGW → Internet -->
+  <line x1="430" y1="294" x2="440" y2="196" stroke="#FF9800" stroke-width="2.5"/>
+  <polygon points="440,196 435,208 445,208" fill="#FF9800"/>
+
+  <!-- Flow B: IGW → Internet (right path) -->
+  <line x1="500" y1="152" x2="510" y2="130" stroke="#FF9800" stroke-width="2"/>
+  <polygon points="510,130 505,142 515,136" fill="#FF9800"/>
+
+  <!-- Annotation box Flow A -->
+  <rect x="590" y="250" width="230" height="100" rx="6" fill="#FFFDE7" stroke="#F9A825" stroke-width="1.5"/>
+  <text x="606" y="270" font-size="11" font-weight="bold" fill="#F57F17">Flow A — Public EC2</text>
+  <text x="606" y="288" font-size="10" fill="#555">1. EC2 sends pkt to IGW</text>
+  <text x="606" y="304" font-size="10" fill="#555">2. IGW NATs src → EIP</text>
+  <text x="606" y="320" font-size="10" fill="#555">3. Pkt reaches Internet</text>
+  <text x="606" y="336" font-size="10" fill="#555">4. Return pkt NAT'd back</text>
+
+  <!-- Annotation box Flow B -->
+  <rect x="590" y="398" width="230" height="112" rx="6" fill="#E8EAF6" stroke="#3F51B5" stroke-width="1.5"/>
+  <text x="606" y="418" font-size="11" font-weight="bold" fill="#283593">Flow B — Private EC2</text>
+  <text x="606" y="436" font-size="10" fill="#555">1. EC2 sends pkt to NAT GW</text>
+  <text x="606" y="452" font-size="10" fill="#555">2. NAT GW NATs src → EIP</text>
+  <text x="606" y="468" font-size="10" fill="#555">3. NAT GW forwards to IGW</text>
+  <text x="606" y="484" font-size="10" fill="#555">4. IGW → Internet</text>
+  <text x="606" y="500" font-size="10" fill="#E53935">No inbound connections!</text>
+</svg>

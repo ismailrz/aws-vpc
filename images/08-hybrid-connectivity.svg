@@ -1,0 +1,107 @@
+<svg width="920" height="600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">Hybrid Connectivity — Site-to-Site VPN &amp; Direct Connect</text>
+
+  <!-- On-Premises Datacenter -->
+  <rect x="20" y="60" width="260" height="480" rx="12" fill="#F3E5F5" stroke="#8E24AA" stroke-width="2.5"/>
+  <text x="60" y="86" font-size="13" font-weight="bold" fill="#6A1B9A">On-Premises DC</text>
+  <text x="36" y="104" font-size="10" fill="#555">192.168.0.0/16 + 10.100.0.0/16</text>
+
+  <!-- Customer GW (for VPN) -->
+  <rect x="36" y="120" width="228" height="80" rx="8" fill="#8E24AA"/>
+  <text x="90" y="146" font-size="11" font-weight="bold" fill="white">Customer Gateway</text>
+  <text x="50" y="164" font-size="10" fill="#E1BEE7">Public IP: 203.0.113.50</text>
+  <text x="50" y="180" font-size="10" fill="#E1BEE7">BGP ASN: 65000 (or static)</text>
+
+  <!-- DX Router (for Direct Connect) -->
+  <rect x="36" y="220" width="228" height="80" rx="8" fill="#4A148C"/>
+  <text x="60" y="246" font-size="11" font-weight="bold" fill="white">DX Connect Router</text>
+  <text x="50" y="264" font-size="10" fill="#CE93D8">Physical fiber to DX location</text>
+  <text x="50" y="280" font-size="10" fill="#CE93D8">VLAN 802.1Q tagging</text>
+
+  <!-- Corp apps -->
+  <rect x="36" y="320" width="228" height="100" rx="8" fill="#6A1B9A"/>
+  <text x="90" y="348" font-size="12" font-weight="bold" fill="white">Corp Apps</text>
+  <text x="50" y="368" font-size="10" fill="#E1BEE7">ERP / CRM / AD</text>
+  <text x="50" y="386" font-size="10" fill="#E1BEE7">DNS: corp.internal</text>
+  <text x="50" y="404" font-size="10" fill="#E1BEE7">File servers</text>
+
+  <!-- DX Location (colocation) -->
+  <rect x="350" y="200" width="200" height="130" rx="10" fill="#E8EAF6" stroke="#3F51B5" stroke-width="2"/>
+  <text x="370" y="224" font-size="12" font-weight="bold" fill="#283593">DX Location</text>
+  <text x="358" y="242" font-size="10" fill="#3949AB">(Colocation Facility)</text>
+  <rect x="368" y="252" width="164" height="42" rx="6" fill="#3F51B5"/>
+  <text x="396" y="272" font-size="10" font-weight="bold" fill="white">Cross-Connect</text>
+  <text x="380" y="288" font-size="9" fill="#C5CAE9">Your cage ↔ AWS cage</text>
+
+  <!-- AWS Region -->
+  <rect x="610" y="60" width="290" height="480" rx="12" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2.5"/>
+  <text x="680" y="86" font-size="13" font-weight="bold" fill="#1565C0">AWS Region</text>
+
+  <!-- VPC -->
+  <rect x="628" y="100" width="254" height="160" rx="8" fill="#BBDEFB" stroke="#1E88E5" stroke-width="1.5"/>
+  <text x="700" y="120" font-size="11" font-weight="bold" fill="#1565C0">VPC</text>
+  <text x="648" y="136" font-size="10" fill="#1976D2">10.0.0.0/16</text>
+
+  <rect x="648" y="146" width="218" height="100" rx="6" fill="#1E88E5"/>
+  <text x="710" y="168" font-size="11" font-weight="bold" fill="white">Resources</text>
+  <text x="658" y="186" font-size="10" fill="#BBDEFB">EC2, RDS, ECS, Lambda</text>
+  <text x="658" y="202" font-size="10" fill="#BBDEFB">Private IPs: 10.0.x.x</text>
+  <text x="658" y="218" font-size="10" fill="#BBDEFB">Reachable from on-prem</text>
+  <text x="658" y="234" font-size="10" fill="#BBDEFB">via VPN or DX</text>
+
+  <!-- VGW -->
+  <rect x="628" y="280" width="254" height="80" rx="8" fill="#0D47A1" stroke="#1565C0" stroke-width="1.5"/>
+  <text x="680" y="304" font-size="12" font-weight="bold" fill="white">Virtual Private GW</text>
+  <text x="648" y="322" font-size="10" fill="#BBDEFB">BGP ASN: 64512 (AWS default)</text>
+  <text x="648" y="338" font-size="10" fill="#BBDEFB">Attached to VPC</text>
+
+  <!-- TGW (alternative) -->
+  <rect x="628" y="380" width="254" height="80" rx="8" fill="#FF9800" stroke="#E65100" stroke-width="1.5"/>
+  <text x="672" y="404" font-size="12" font-weight="bold" fill="white">Transit Gateway</text>
+  <text x="648" y="422" font-size="10" fill="#FFF8E1">Alternative for multi-VPC</text>
+  <text x="648" y="438" font-size="10" fill="#FFF8E1">+ Transit VIF on DX</text>
+
+  <!-- DX GW -->
+  <rect x="628" y="480" width="254" height="50" rx="8" fill="#4A148C"/>
+  <text x="654" y="502" font-size="11" font-weight="bold" fill="white">Direct Connect Gateway</text>
+  <text x="648" y="518" font-size="9" fill="#E1BEE7">Multi-region VPC access from single DX</text>
+
+  <!-- === CONNECTION LINES === -->
+
+  <!-- VPN: Customer GW → VGW (2 tunnels) -->
+  <path d="M 264 155 Q 440 100 628 310" fill="none" stroke="#8E24AA" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <path d="M 264 175 Q 440 135 628 330" fill="none" stroke="#8E24AA" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <rect x="356" y="105" width="188" height="34" rx="6" fill="#8E24AA"/>
+  <text x="370" y="120" font-size="10" font-weight="bold" fill="white">Site-to-Site VPN</text>
+  <text x="362" y="134" font-size="9" fill="#E1BEE7">2x IPsec tunnels over internet  |  1.25 Gbps each</text>
+
+  <!-- DX: Corp Router → DX Location -->
+  <line x1="264" y1="258" x2="350" y2="258" stroke="#3F51B5" stroke-width="3"/>
+  <polygon points="350,258 338,252 338,264" fill="#3F51B5"/>
+  <text x="278" y="248" font-size="9" fill="#3F51B5">fiber</text>
+
+  <!-- DX Location → VGW -->
+  <line x1="550" y1="268" x2="628" y2="318" stroke="#3F51B5" stroke-width="3"/>
+  <polygon points="628,318 617,312 619,324" fill="#3F51B5"/>
+
+  <!-- DX Location → DX GW -->
+  <line x1="550" y1="290" x2="628" y2="500" stroke="#4A148C" stroke-width="2" stroke-dasharray="6,3"/>
+  <polygon points="628,500 618,492 620,504" fill="#4A148C"/>
+
+  <rect x="356" y="345" width="190" height="34" rx="6" fill="#3F51B5"/>
+  <text x="368" y="360" font-size="10" font-weight="bold" fill="white">Direct Connect Private VIF</text>
+  <text x="370" y="374" font-size="9" fill="#C5CAE9">Dedicated: 1/10/100 Gbps  |  No internet</text>
+
+  <!-- VGW → VPC arrow -->
+  <line x1="755" y1="280" x2="755" y2="260" stroke="#0D47A1" stroke-width="2"/>
+  <polygon points="755,260 749,271 761,271" fill="#0D47A1"/>
+
+  <!-- TGW note arrow -->
+  <line x1="755" y1="380" x2="755" y2="360" stroke="#FF9800" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- Comparison table at bottom -->
+  <rect x="20" y="548" width="880" height="44" rx="6" fill="#FFFDE7" stroke="#FBC02D" stroke-width="1.5"/>
+  <text x="38" y="564" font-size="11" font-weight="bold" fill="#F57F17">VPN vs Direct Connect:</text>
+  <text x="210" y="564" font-size="10" fill="#333">VPN: quick setup, encrypted, over internet, max ~2.5 Gbps, variable latency</text>
+  <text x="210" y="580" font-size="10" fill="#333">DX: weeks setup, NOT encrypted by default, private backbone, up to 100 Gbps, consistent latency  |  Best: DX + VPN for encrypted HA</text>
+</svg>

@@ -27,6 +27,21 @@
 
 ---
 
+## Architecture Diagrams
+
+| Diagram | Description |
+|---------|-------------|
+| ![VPC Overview](images/01-vpc-overview.svg) | VPC structure — Region, AZs, subnet types |
+| ![Internet & NAT Gateway](images/02-internet-nat-gateway.svg) | IGW and NAT Gateway traffic flows |
+| ![Security Layers](images/03-security-layers.svg) | Security Groups and NACLs — layered defense |
+| ![VPC Peering](images/04-vpc-peering.svg) | VPC Peering and non-transitive routing |
+| ![Transit Gateway](images/05-transit-gateway.svg) | TGW hub-and-spoke architecture |
+| ![HA Architecture](images/06-ha-architecture.svg) | 3-tier multi-AZ production VPC |
+| ![VPC Endpoints](images/07-vpc-endpoints.svg) | Gateway and Interface Endpoints |
+| ![Hybrid Connectivity](images/08-hybrid-connectivity.svg) | Site-to-Site VPN and Direct Connect |
+
+---
+
 ## 1. Overview
 
 ### What is a VPC?
@@ -91,6 +106,8 @@ Think of a VPC as your own private data center network — but running on AWS in
 - All IPv6 addresses are globally unique (no private IPv6 in VPC)
 
 ---
+
+![VPC Overview](images/01-vpc-overview.svg)
 
 ## 2. Subnets
 
@@ -247,6 +264,8 @@ All three must be true:
 
 ### Traffic Flow — Public EC2 to Internet
 
+![Internet & NAT Gateway](images/02-internet-nat-gateway.svg)
+
 ```
    ┌─────────────────────────────────────────────────────────────┐
    │  VPC (10.0.0.0/16)                                          │
@@ -370,6 +389,8 @@ Every VPC has a default SG. Its initial rules:
 
 ### Security Group Chaining (Reference by SG ID)
 
+![Security Groups & NACLs](images/03-security-layers.svg)
+
 Instead of specifying IP CIDR ranges, you can reference another SG as the source/destination. This is far more maintainable — as instances scale out or IP addresses change, the rule stays correct.
 
 ```
@@ -477,6 +498,8 @@ Your NACL outbound rules must allow this range to permit return traffic for inbo
 
 ## 8. VPC Endpoints
 
+![VPC Endpoints](images/07-vpc-endpoints.svg)
+
 A **VPC Endpoint** lets resources inside your VPC privately connect to supported AWS services **without** leaving the Amazon network — no Internet Gateway, NAT device, VPN, or Direct Connect required.
 
 ### Gateway Endpoints
@@ -541,6 +564,8 @@ Private Subnet EC2 ──── [VPC local route] ──── S3 Gateway Endpoi
 
 ## 9. VPC Peering
 
+![VPC Peering](images/04-vpc-peering.svg)
+
 **VPC Peering** creates a private, one-to-one networking connection between two VPCs. Traffic stays on the AWS backbone and never traverses the public internet.
 
 ### Key Characteristics
@@ -598,6 +623,8 @@ By default, DNS hostnames of peered VPC instances resolve to their public IP (if
 ---
 
 ## 10. AWS Transit Gateway (TGW)
+
+![Transit Gateway](images/05-transit-gateway.svg)
 
 **AWS Transit Gateway** is a regional hub that interconnects VPCs, VPNs, and Direct Connect in a hub-and-spoke model. It eliminates the full-mesh complexity of VPC peering at scale.
 
@@ -666,6 +693,8 @@ TGWs in different regions can be peered together. Traffic between regions flows 
 ---
 
 ## 11. VPN Connections
+
+![Hybrid Connectivity](images/08-hybrid-connectivity.svg)
 
 AWS provides two types of VPN for extending your network into a VPC.
 
@@ -1031,6 +1060,8 @@ This section brings everything together into a production-ready, highly availabl
 - Minimal blast radius per security boundary
 
 ### Complete Production VPC — ASCII Diagram
+
+![HA Multi-AZ Architecture](images/06-ha-architecture.svg)
 
 ```
   ┌─────────────────────────────────────────────────────────────────────────────────┐

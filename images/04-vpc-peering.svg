@@ -1,0 +1,98 @@
+<svg width="880" height="540" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">VPC Peering — Non-Transitive Routing</text>
+
+  <!-- VPC A -->
+  <rect x="30" y="60" width="230" height="300" rx="10" fill="#E8F5E9" stroke="#43A047" stroke-width="2.5"/>
+  <text x="80" y="86" font-size="13" font-weight="bold" fill="#2E7D32">VPC-A</text>
+  <text x="66" y="104" font-size="11" fill="#388E3C">10.0.0.0/16</text>
+  <text x="50" y="122" font-size="10" fill="#555">Account: 111111111</text>
+  <rect x="50" y="136" width="190" height="70" rx="6" fill="#43A047"/>
+  <text x="78" y="160" font-size="11" font-weight="bold" fill="white">EC2 Instances</text>
+  <text x="64" y="178" font-size="10" fill="#C8E6C9">10.0.1.10, 10.0.1.11</text>
+  <text x="64" y="194" font-size="10" fill="#C8E6C9">app-servers</text>
+
+  <!-- Route table A -->
+  <rect x="50" y="224" width="190" height="116" rx="6" fill="white" stroke="#43A047" stroke-width="1"/>
+  <text x="62" y="242" font-size="10" font-weight="bold" fill="#2E7D32">Route Table — VPC-A</text>
+  <line x1="50" y1="246" x2="240" y2="246" stroke="#43A047" stroke-width="0.8"/>
+  <text x="58" y="262" font-size="9" fill="#333">Dest           Target</text>
+  <line x1="50" y1="266" x2="240" y2="266" stroke="#ddd" stroke-width="0.5"/>
+  <text x="58" y="280" font-size="9" fill="#333">10.0.0.0/16    local</text>
+  <text x="58" y="294" font-size="9" fill="#1E88E5">10.1.0.0/16    pcx-AB</text>
+  <text x="58" y="308" font-size="9" fill="#9E9E9E">10.2.0.0/16    —</text>
+  <text x="58" y="322" font-size="9" fill="#9E9E9E">(no route!)</text>
+
+  <!-- VPC B — center hub -->
+  <rect x="325" y="60" width="230" height="300" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2.5"/>
+  <text x="378" y="86" font-size="13" font-weight="bold" fill="#1565C0">VPC-B</text>
+  <text x="362" y="104" font-size="11" fill="#1976D2">10.1.0.0/16</text>
+  <text x="342" y="122" font-size="10" fill="#555">Account: 222222222</text>
+  <rect x="345" y="136" width="190" height="70" rx="6" fill="#1E88E5"/>
+  <text x="370" y="160" font-size="11" font-weight="bold" fill="white">Shared Services</text>
+  <text x="356" y="178" font-size="10" fill="#BBDEFB">10.1.1.5 — DNS</text>
+  <text x="356" y="194" font-size="10" fill="#BBDEFB">10.1.1.6 — Monitoring</text>
+
+  <!-- Route table B -->
+  <rect x="345" y="224" width="190" height="116" rx="6" fill="white" stroke="#1E88E5" stroke-width="1"/>
+  <text x="357" y="242" font-size="10" font-weight="bold" fill="#1565C0">Route Table — VPC-B</text>
+  <line x1="345" y1="246" x2="535" y2="246" stroke="#1E88E5" stroke-width="0.8"/>
+  <text x="353" y="262" font-size="9" fill="#333">Dest           Target</text>
+  <line x1="345" y1="266" x2="535" y2="266" stroke="#ddd" stroke-width="0.5"/>
+  <text x="353" y="280" font-size="9" fill="#333">10.1.0.0/16    local</text>
+  <text x="353" y="294" font-size="9" fill="#43A047">10.0.0.0/16    pcx-AB</text>
+  <text x="353" y="308" font-size="9" fill="#E53935">10.2.0.0/16    pcx-BC</text>
+  <text x="353" y="322" font-size="9" fill="#888">(no transit!)</text>
+
+  <!-- VPC C -->
+  <rect x="620" y="60" width="230" height="300" rx="10" fill="#FCE4EC" stroke="#E53935" stroke-width="2.5"/>
+  <text x="674" y="86" font-size="13" font-weight="bold" fill="#B71C1C">VPC-C</text>
+  <text x="658" y="104" font-size="11" fill="#C62828">10.2.0.0/16</text>
+  <text x="638" y="122" font-size="10" fill="#555">Account: 333333333</text>
+  <rect x="640" y="136" width="190" height="70" rx="6" fill="#E53935"/>
+  <text x="672" y="160" font-size="11" font-weight="bold" fill="white">Analytics</text>
+  <text x="652" y="178" font-size="10" fill="#FFCDD2">10.2.1.10 — Redshift</text>
+  <text x="652" y="194" font-size="10" fill="#FFCDD2">10.2.1.11 — EMR</text>
+
+  <!-- Route table C -->
+  <rect x="640" y="224" width="190" height="116" rx="6" fill="white" stroke="#E53935" stroke-width="1"/>
+  <text x="652" y="242" font-size="10" font-weight="bold" fill="#B71C1C">Route Table — VPC-C</text>
+  <line x1="640" y1="246" x2="830" y2="246" stroke="#E53935" stroke-width="0.8"/>
+  <text x="648" y="262" font-size="9" fill="#333">Dest           Target</text>
+  <line x1="640" y1="266" x2="830" y2="266" stroke="#ddd" stroke-width="0.5"/>
+  <text x="648" y="280" font-size="9" fill="#333">10.2.0.0/16    local</text>
+  <text x="648" y="294" font-size="9" fill="#1E88E5">10.1.0.0/16    pcx-BC</text>
+  <text x="648" y="308" font-size="9" fill="#9E9E9E">10.0.0.0/16    —</text>
+  <text x="648" y="322" font-size="9" fill="#9E9E9E">(no route!)</text>
+
+  <!-- Peering connection AB -->
+  <line x1="260" y1="210" x2="325" y2="210" stroke="#1E88E5" stroke-width="3"/>
+  <polygon points="325,210 313,204 313,216" fill="#1E88E5"/>
+  <polygon points="260,210 272,204 272,216" fill="#1E88E5"/>
+  <rect x="267" y="194" width="52" height="18" rx="4" fill="#1E88E5"/>
+  <text x="273" y="206" font-size="9" font-weight="bold" fill="white">pcx-AB</text>
+
+  <!-- Peering connection BC -->
+  <line x1="555" y1="210" x2="620" y2="210" stroke="#E53935" stroke-width="3"/>
+  <polygon points="620,210 608,204 608,216" fill="#E53935"/>
+  <polygon points="555,210 567,204 567,216" fill="#E53935"/>
+  <rect x="562" y="194" width="50" height="18" rx="4" fill="#E53935"/>
+  <text x="567" y="206" font-size="9" font-weight="bold" fill="white">pcx-BC</text>
+
+  <!-- BLOCKED A → C arrow -->
+  <line x1="440" y1="390" x2="440" y2="420" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <!-- Curved dashed arrow A to C attempt -->
+  <path d="M 145 360 Q 440 430 735 360" fill="none" stroke="#C62828" stroke-width="2" stroke-dasharray="8,5"/>
+  <polygon points="735,360 722,356 726,368" fill="#C62828"/>
+
+  <!-- BLOCKED label -->
+  <rect x="368" y="394" width="144" height="36" rx="6" fill="#FFEBEE" stroke="#C62828" stroke-width="2"/>
+  <text x="385" y="410" font-size="11" font-weight="bold" fill="#C62828">&#x2717; BLOCKED</text>
+  <text x="376" y="424" font-size="10" fill="#B71C1C">Non-transitive routing</text>
+
+  <!-- Explanation box -->
+  <rect x="30" y="440" width="820" height="90" rx="8" fill="#FFFDE7" stroke="#FBC02D" stroke-width="1.5"/>
+  <text x="50" y="462" font-size="12" font-weight="bold" fill="#F57F17">Why is this blocked?</text>
+  <text x="50" y="480" font-size="11" fill="#333">VPC-A sends traffic to 10.2.x.x → it arrives at VPC-B via pcx-AB.</text>
+  <text x="50" y="496" font-size="11" fill="#333">VPC-B has a route to VPC-C via pcx-BC, but AWS does NOT forward transit traffic through a peering connection.</text>
+  <text x="50" y="512" font-size="11" fill="#555">&#x2192; Solution: create a direct VPC-A ↔ VPC-C peering, or use Transit Gateway for hub-and-spoke routing.</text>
+</svg>
