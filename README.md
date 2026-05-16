@@ -1,6 +1,26 @@
-# AWS VPC — Deep Dive Reference
+# AWS VPC (Virtual Private Cloud) — Complete Guide & Deep Dive Reference
 
-> A complete reference covering every major VPC concept, with architecture diagrams, configuration details, and operational guidance. Split into 18 sections for easy navigation.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![AWS](https://img.shields.io/badge/AWS-VPC%20Networking-FF9900?logo=amazonaws&logoColor=white)](https://aws.amazon.com/vpc/)
+[![Topics](https://img.shields.io/badge/Topics-Subnets%20%7C%20Routing%20%7C%20Security%20%7C%20Peering%20%7C%20TGW%20%7C%20DX-blue)](#table-of-contents)
+
+A comprehensive AWS networking reference covering **Amazon VPC** from first principles to production architecture. Includes **18 in-depth sections**, **8 architecture diagrams**, comparison tables, and real configuration examples — everything you need to understand, design, and operate AWS VPC networking.
+
+**Topics covered:** VPC subnets · Route Tables · Internet Gateway · NAT Gateway · Security Groups · Network ACLs · VPC Endpoints (PrivateLink) · VPC Peering · Transit Gateway · Site-to-Site VPN · AWS Direct Connect · Flow Logs · Route 53 Resolver · High Availability design · CIDR planning
+
+> Useful for: AWS Solutions Architect Associate / Professional exam prep, cloud engineers designing production VPCs, developers learning AWS networking, and DevOps teams building multi-account architectures.
+
+---
+
+## Who Is This For?
+
+| Audience | How this helps |
+|----------|----------------|
+| **AWS Beginners** | Learn what a VPC is, how subnets work, and how traffic flows end-to-end |
+| **Solutions Architects** | Reference for every networking component: peering, TGW, DX, PrivateLink |
+| **Certification Prep** | Covers every VPC topic in the SAA-C03 and SAP-C02 exam blueprints |
+| **DevOps / Platform Engineers** | Practical patterns: HA NAT, multi-AZ design, hybrid connectivity |
+| **Security Engineers** | Deep coverage of Security Groups, NACLs, VPC Flow Logs, and endpoint policies |
 
 ---
 
@@ -62,6 +82,8 @@ Think of a VPC as your own private data center network — but running on AWS in
 │  └──────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+![VPC Overview](images/09-aws-vpc.png)
 
 ### Default VPC vs Custom VPC
 
