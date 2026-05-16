@@ -27,21 +27,6 @@
 
 ---
 
-## Architecture Diagrams
-
-| Diagram | Description |
-|---------|-------------|
-| ![VPC Overview](images/01-vpc-overview.svg) | VPC structure — Region, AZs, subnet types |
-| ![Internet & NAT Gateway](images/02-internet-nat-gateway.svg) | IGW and NAT Gateway traffic flows |
-| ![Security Layers](images/03-security-layers.svg) | Security Groups and NACLs — layered defense |
-| ![VPC Peering](images/04-vpc-peering.svg) | VPC Peering and non-transitive routing |
-| ![Transit Gateway](images/05-transit-gateway.svg) | TGW hub-and-spoke architecture |
-| ![HA Architecture](images/06-ha-architecture.svg) | 3-tier multi-AZ production VPC |
-| ![VPC Endpoints](images/07-vpc-endpoints.svg) | Gateway and Interface Endpoints |
-| ![Hybrid Connectivity](images/08-hybrid-connectivity.svg) | Site-to-Site VPN and Direct Connect |
-
----
-
 ## 1. Overview
 
 ### What is a VPC?
