@@ -1,0 +1,82 @@
+<svg width="900" height="520" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">VPC Traffic Mirroring — Packet Capture &amp; IDS/IPS</text>
+
+  <!-- VPC -->
+  <rect x="20" y="50" width="860" height="380" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="40" y="72" font-size="12" font-weight="bold" fill="#1565C0">VPC (10.0.0.0/16)</text>
+
+  <!-- Source EC2 -->
+  <rect x="60" y="90" width="220" height="140" rx="8" fill="#E8EAF6" stroke="#3F51B5" stroke-width="2"/>
+  <text x="78" y="112" font-size="11" font-weight="bold" fill="#283593">Mirror Source</text>
+  <rect x="78" y="122" width="184" height="60" rx="6" fill="#3F51B5"/>
+  <text x="124" y="148" font-size="11" font-weight="bold" fill="white">EC2 Instance</text>
+  <text x="92" y="164" font-size="10" fill="#C5CAE9">eth0 (ENI): 10.0.1.25</text>
+  <text x="86" y="188" font-size="10" fill="#3949AB">Any Nitro-based instance</text>
+  <text x="86" y="204" font-size="10" fill="#3949AB">type (m5, c5, r5…)</text>
+
+  <!-- Filter box -->
+  <rect x="340" y="90" width="220" height="140" rx="8" fill="#FFF3E0" stroke="#FF6F00" stroke-width="2"/>
+  <text x="358" y="112" font-size="11" font-weight="bold" fill="#E65100">Mirror Filter</text>
+  <rect x="358" y="122" width="184" height="96" rx="6" fill="#FF9800"/>
+  <text x="374" y="142" font-size="10" font-weight="bold" fill="white">Inbound rules:</text>
+  <text x="374" y="158" font-size="9" fill="#FFF8E1">ACCEPT TCP/22 from 0.0.0.0/0</text>
+  <text x="374" y="174" font-size="9" fill="#FFF8E1">ACCEPT TCP/443 from 0.0.0.0/0</text>
+  <text x="374" y="190" font-size="10" font-weight="bold" fill="white">Outbound rules:</text>
+  <text x="374" y="206" font-size="9" fill="#FFF8E1">ACCEPT ALL</text>
+
+  <!-- Target NLB + IDS -->
+  <rect x="620" y="90" width="220" height="140" rx="8" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2"/>
+  <text x="638" y="112" font-size="11" font-weight="bold" fill="#2E7D32">Mirror Target</text>
+  <rect x="638" y="122" width="184" height="44" rx="6" fill="#43A047"/>
+  <text x="682" y="148" font-size="11" font-weight="bold" fill="white">NLB</text>
+  <text x="648" y="163" font-size="9" fill="#C8E6C9">(scales monitoring fleet)</text>
+  <rect x="638" y="172" width="184" height="44" rx="6" fill="#66BB6A"/>
+  <text x="660" y="190" font-size="11" font-weight="bold" fill="white">IDS / Forensic Tool</text>
+  <text x="648" y="206" font-size="9" fill="#C8E6C9">Suricata / Zeek / Wireshark</text>
+
+  <!-- Original traffic path (top) -->
+  <line x1="280" y1="152" x2="340" y2="152" stroke="#1E88E5" stroke-width="2.5"/>
+  <line x1="340" y1="152" x2="340" y2="300" stroke="#1E88E5" stroke-width="2" stroke-dasharray="0"/>
+  <text x="284" y="145" font-size="10" font-weight="bold" fill="#1565C0">original traffic</text>
+  <text x="284" y="158" font-size="9" fill="#1565C0">continues normally</text>
+
+  <!-- Mirror copy path -->
+  <line x1="170" y1="230" x2="170" y2="264" stroke="#E53935" stroke-width="2.5"/>
+  <polygon points="170,264 164,253 176,253" fill="#E53935"/>
+  <text x="176" y="252" font-size="10" font-weight="bold" fill="#C62828">mirrored copy</text>
+
+  <!-- Mirror session box -->
+  <rect x="60" y="270" width="760" height="110" rx="8" fill="#FCE4EC" stroke="#E53935" stroke-width="1.5"/>
+  <text x="80" y="290" font-size="11" font-weight="bold" fill="#B71C1C">Mirror Session (ties everything together)</text>
+
+  <rect x="80" y="300" width="200" height="68" rx="6" fill="#EF9A9A" stroke="#E53935" stroke-width="1"/>
+  <text x="96" y="318" font-size="10" font-weight="bold" fill="#B71C1C">Session ID: ms-001</text>
+  <text x="88" y="334" font-size="9" fill="#333">Source: eni-xxxxxxxxx</text>
+  <text x="88" y="348" font-size="9" fill="#333">Filter: mf-xxxxxxxxx</text>
+  <text x="88" y="362" font-size="9" fill="#333">Target: tmt-xxxxxxxxx (NLB)</text>
+
+  <rect x="300" y="300" width="200" height="68" rx="6" fill="#EF9A9A" stroke="#E53935" stroke-width="1"/>
+  <text x="316" y="318" font-size="10" font-weight="bold" fill="#B71C1C">VXLAN Encapsulation</text>
+  <text x="308" y="334" font-size="9" fill="#333">Protocol: UDP port 4789</text>
+  <text x="308" y="348" font-size="9" fill="#333">Outer IP: src=source ENI IP</text>
+  <text x="308" y="362" font-size="9" fill="#333">Inner: original packet preserved</text>
+
+  <rect x="520" y="300" width="280" height="68" rx="6" fill="#EF9A9A" stroke="#E53935" stroke-width="1"/>
+  <text x="536" y="318" font-size="10" font-weight="bold" fill="#B71C1C">Requirements &amp; Limits</text>
+  <text x="528" y="334" font-size="9" fill="#333">&#x2714; Nitro instances only (m5, c5, r5, t3…)</text>
+  <text x="528" y="348" font-size="9" fill="#333">&#x2714; Source &amp; target: same VPC or peered</text>
+  <text x="528" y="362" font-size="9" fill="#C62828">&#x26A0; ~$0.015/GB mirrored — filter tightly!</text>
+
+  <!-- Mirror arrows: session → target -->
+  <line x1="170" y1="270" x2="730" y2="200" stroke="#E53935" stroke-width="2.5" stroke-dasharray="8,4"/>
+  <polygon points="730,200 718,198 722,210" fill="#E53935"/>
+  <text x="380" y="254" font-size="10" font-weight="bold" fill="#C62828">VXLAN (UDP/4789) copied packet</text>
+
+  <!-- Bottom callout -->
+  <rect x="20" y="446" width="860" height="62" rx="8" fill="#FFFDE7" stroke="#FBC02D" stroke-width="1.5"/>
+  <text x="40" y="466" font-size="11" font-weight="bold" fill="#F57F17">Use Cases</text>
+  <text x="40" y="484" font-size="10" fill="#333">&#x2022; Intrusion Detection (IDS) without agents</text>
+  <text x="240" y="484" font-size="10" fill="#333">&#x2022; Full packet capture for forensic investigation</text>
+  <text x="530" y="484" font-size="10" fill="#333">&#x2022; Compliance monitoring (PCI-DSS, HIPAA)</text>
+  <text x="40" y="500" font-size="10" fill="#555">&#x2022; Zero-impact on source instance performance  &#x2022; Works alongside Security Groups &amp; NACLs</text>
+</svg>

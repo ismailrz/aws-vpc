@@ -1,0 +1,85 @@
+<svg width="900" height="560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">Gateway Load Balancer (GWLB) — Inline Traffic Inspection</text>
+
+  <!-- Internet -->
+  <ellipse cx="450" cy="72" rx="120" ry="38" fill="#ECEFF1" stroke="#90A4AE" stroke-width="2"/>
+  <text x="396" y="68" font-size="13" font-weight="bold" fill="#546E7A">&#x1F310; Internet</text>
+  <text x="410" y="86" font-size="10" fill="#78909C">Client: 203.0.113.5</text>
+
+  <!-- IGW -->
+  <rect x="350" y="128" width="200" height="38" rx="8" fill="#FF9800" stroke="#E65100" stroke-width="2"/>
+  <text x="396" y="152" font-size="12" font-weight="bold" fill="white">Internet Gateway</text>
+
+  <line x1="450" y1="110" x2="450" y2="128" stroke="#FF9800" stroke-width="2.5"/>
+  <polygon points="450,128 444,118 456,118" fill="#FF9800"/>
+
+  <!-- VPC box -->
+  <rect x="20" y="182" width="860" height="360" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="40" y="204" font-size="12" font-weight="bold" fill="#1565C0">VPC (Consumer or Security VPC)</text>
+
+  <!-- Step 1: Packet arrives, routed to GWLB Endpoint -->
+  <rect x="320" y="216" width="260" height="52" rx="8" fill="#E8EAF6" stroke="#3F51B5" stroke-width="2"/>
+  <text x="356" y="238" font-size="11" font-weight="bold" fill="#283593">GWLB Endpoint</text>
+  <text x="332" y="256" font-size="10" fill="#3949AB">(PrivateLink-based ENI in your subnet)</text>
+
+  <line x1="450" y1="166" x2="450" y2="216" stroke="#3F51B5" stroke-width="2.5"/>
+  <polygon points="450,216 444,205 456,205" fill="#3F51B5"/>
+  <rect x="456" y="180" width="150" height="20" rx="4" fill="#3F51B5"/>
+  <text x="462" y="194" font-size="9" font-weight="bold" fill="white">Route: 0.0.0.0/0 → GWLB Endpoint</text>
+
+  <!-- GWLB -->
+  <rect x="290" y="292" width="320" height="52" rx="8" fill="#7B1FA2" stroke="#4A148C" stroke-width="2.5"/>
+  <text x="358" y="314" font-size="12" font-weight="bold" fill="white">Gateway Load Balancer</text>
+  <text x="318" y="330" font-size="10" fill="#E1BEE7">GENEVE encapsulation (UDP/6081)  |  Health-checks appliances</text>
+
+  <line x1="450" y1="268" x2="450" y2="292" stroke="#7B1FA2" stroke-width="2.5"/>
+  <polygon points="450,292 444,281 456,281" fill="#7B1FA2"/>
+
+  <!-- Appliance fleet -->
+  <rect x="80" y="368" width="740" height="80" rx="8" fill="#FFF3E0" stroke="#FF6F00" stroke-width="1.5"/>
+  <text x="100" y="388" font-size="11" font-weight="bold" fill="#E65100">Appliance Fleet (auto-scaled by GWLB)</text>
+
+  <rect x="100" y="396" width="160" height="42" rx="6" fill="#FF9800"/>
+  <text x="128" y="416" font-size="10" font-weight="bold" fill="white">Palo Alto NGFW</text>
+  <text x="112" y="432" font-size="9" fill="#FFF8E1">10.10.1.10</text>
+
+  <rect x="280" y="396" width="160" height="42" rx="6" fill="#F57C00"/>
+  <text x="298" y="416" font-size="10" font-weight="bold" fill="white">Fortinet / Check Point</text>
+  <text x="312" y="432" font-size="9" fill="#FFF8E1">10.10.1.11</text>
+
+  <rect x="460" y="396" width="160" height="42" rx="6" fill="#EF6C00"/>
+  <text x="488" y="416" font-size="10" font-weight="bold" fill="white">IDS/IPS Appliance</text>
+  <text x="492" y="432" font-size="9" fill="#FFF8E1">10.10.1.12</text>
+
+  <rect x="640" y="396" width="160" height="42" rx="6" fill="#E65100"/>
+  <text x="668" y="416" font-size="10" font-weight="bold" fill="white">+ more (scale out)</text>
+  <text x="668" y="432" font-size="9" fill="#FFF8E1">auto-scaled</text>
+
+  <!-- Arrows GWLB to appliances -->
+  <line x1="340" y1="344" x2="200" y2="396" stroke="#7B1FA2" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="200,396 196,384 208,386" fill="#7B1FA2"/>
+  <line x1="420" y1="344" x2="370" y2="396" stroke="#7B1FA2" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="370,396 368,384 380,388" fill="#7B1FA2"/>
+  <line x1="480" y1="344" x2="540" y2="396" stroke="#7B1FA2" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="540,396 538,384 550,388" fill="#7B1FA2"/>
+  <line x1="560" y1="344" x2="710" y2="396" stroke="#7B1FA2" stroke-width="2" stroke-dasharray="5,3"/>
+  <polygon points="710,396 702,386 714,384" fill="#7B1FA2"/>
+
+  <!-- Return path: appliance → GWLB → GWLB Endpoint → App -->
+  <rect x="320" y="462" width="260" height="52" rx="8" fill="#E8EAF6" stroke="#3F51B5" stroke-width="2"/>
+  <text x="360" y="484" font-size="11" font-weight="bold" fill="#283593">GWLB Endpoint (return)</text>
+  <text x="334" y="500" font-size="10" fill="#3949AB">Inspected packet forwarded to application</text>
+
+  <line x1="450" y1="448" x2="450" y2="462" stroke="#3F51B5" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <polygon points="450,462 444,451 456,451" fill="#3F51B5"/>
+
+  <!-- Transparency callout -->
+  <rect x="640" y="216" width="220" height="130" rx="8" fill="#E8F5E9" stroke="#43A047" stroke-width="1.5"/>
+  <text x="656" y="234" font-size="11" font-weight="bold" fill="#2E7D32">Why GWLB?</text>
+  <text x="652" y="252" font-size="10" fill="#333">&#x2714; Source/dest IPs preserved</text>
+  <text x="652" y="268" font-size="10" fill="#333">&#x2714; Appliances see real traffic</text>
+  <text x="652" y="284" font-size="10" fill="#333">&#x2714; Scale appliance fleet with ASG</text>
+  <text x="652" y="300" font-size="10" fill="#333">&#x2714; Sticky sessions per flow</text>
+  <text x="652" y="316" font-size="10" fill="#333">&#x2714; Cross-VPC via PrivateLink</text>
+  <text x="652" y="332" font-size="10" fill="#C62828">~ $0.008/hr + $0.004/GB</text>
+</svg>

@@ -1,0 +1,87 @@
+<svg width="920" height="560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">AWS VPC Lattice — Cross-Account Service Networking</text>
+
+  <!-- Service Network hub -->
+  <rect x="280" y="220" width="360" height="80" rx="12" fill="#FF9800" stroke="#E65100" stroke-width="3"/>
+  <text x="348" y="254" font-size="14" font-weight="bold" fill="white">Service Network</text>
+  <text x="306" y="272" font-size="10" fill="#FFF8E1">Central hub — cross-account, cross-VPC  |  Auth Policy (IAM SigV4)</text>
+  <text x="318" y="288" font-size="9" fill="#FFE0B2">sn-xxxxxxxxxxxxxxxx  |  Shared via AWS RAM</text>
+
+  <!-- Consumer VPCs (left side) -->
+  <rect x="20" y="60" width="220" height="130" rx="10" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+  <text x="60" y="82" font-size="12" font-weight="bold" fill="#2E7D32">Consumer VPC-1</text>
+  <text x="38" y="98" font-size="10" fill="#555">Account: 111111111111</text>
+  <rect x="38" y="108" width="184" height="40" rx="6" fill="#43A047"/>
+  <text x="86" y="124" font-size="10" font-weight="bold" fill="white">Frontend App</text>
+  <text x="62" y="140" font-size="9" fill="#C8E6C9">calls: payments-svc, catalog-svc</text>
+  <text x="38" y="162" font-size="10" fill="#2E7D32">Associated to Service Network</text>
+  <text x="38" y="176" font-size="9" fill="#388E3C">via VPC Association</text>
+
+  <rect x="20" y="220" width="220" height="130" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="60" y="242" font-size="12" font-weight="bold" fill="#1565C0">Consumer VPC-2</text>
+  <text x="38" y="258" font-size="10" fill="#555">Account: 222222222222</text>
+  <rect x="38" y="268" width="184" height="40" rx="6" fill="#1E88E5"/>
+  <text x="78" y="284" font-size="10" font-weight="bold" fill="white">Analytics Service</text>
+  <text x="54" y="300" font-size="9" fill="#BBDEFB">calls: inventory-svc</text>
+  <text x="38" y="322" font-size="10" fill="#1565C0">Associated to Service Network</text>
+
+  <rect x="20" y="380" width="220" height="130" rx="10" fill="#F3E5F5" stroke="#7B1FA2" stroke-width="2"/>
+  <text x="60" y="402" font-size="12" font-weight="bold" fill="#6A1B9A">Consumer VPC-3</text>
+  <text x="38" y="418" font-size="10" fill="#555">Account: 333333333333</text>
+  <rect x="38" y="428" width="184" height="40" rx="6" fill="#8E24AA"/>
+  <text x="84" y="444" font-size="10" font-weight="bold" fill="white">Mobile Backend</text>
+  <text x="54" y="460" font-size="9" fill="#E1BEE7">calls: payments-svc</text>
+  <text x="38" y="482" font-size="10" fill="#7B1FA2">No peering or TGW needed</text>
+
+  <!-- Provider Services (right side) -->
+  <rect x="680" y="60" width="220" height="130" rx="10" fill="#FCE4EC" stroke="#E53935" stroke-width="2"/>
+  <text x="694" y="82" font-size="12" font-weight="bold" fill="#B71C1C">payments-svc</text>
+  <text x="694" y="98" font-size="10" fill="#555">Account: 444444444444</text>
+  <rect x="698" y="108" width="184" height="40" rx="6" fill="#E53935"/>
+  <text x="746" y="124" font-size="10" font-weight="bold" fill="white">ECS Service</text>
+  <text x="710" y="140" font-size="9" fill="#FFCDD2">HTTPS listener: /payments/*</text>
+  <text x="698" y="162" font-size="10" fill="#E53935">Registered to Service Network</text>
+  <text x="698" y="176" font-size="9" fill="#C62828">via Service Association</text>
+
+  <rect x="680" y="220" width="220" height="130" rx="10" fill="#FFF3E0" stroke="#FF6F00" stroke-width="2"/>
+  <text x="700" y="242" font-size="12" font-weight="bold" fill="#E65100">catalog-svc</text>
+  <text x="694" y="258" font-size="10" fill="#555">Account: 444444444444</text>
+  <rect x="698" y="268" width="184" height="40" rx="6" fill="#FF9800"/>
+  <text x="748" y="284" font-size="10" font-weight="bold" fill="white">Lambda Function</text>
+  <text x="710" y="300" font-size="9" fill="#FFF8E1">HTTP listener: /catalog/*</text>
+  <text x="698" y="322" font-size="10" fill="#E65100">gRPC + HTTP routing rules</text>
+
+  <rect x="680" y="380" width="220" height="130" rx="10" fill="#E0F7FA" stroke="#00ACC1" stroke-width="2"/>
+  <text x="700" y="402" font-size="12" font-weight="bold" fill="#006064">inventory-svc</text>
+  <text x="694" y="418" font-size="10" fill="#555">Account: 555555555555</text>
+  <rect x="698" y="428" width="184" height="40" rx="6" fill="#00ACC1"/>
+  <text x="742" y="444" font-size="10" font-weight="bold" fill="white">EKS Service</text>
+  <text x="710" y="460" font-size="9" fill="#B2EBF2">HTTPS: /inventory/*</text>
+  <text x="698" y="482" font-size="10" fill="#006064">Auth policy: IAM role-based</text>
+
+  <!-- Arrows from consumers to service network -->
+  <line x1="240" y1="110" x2="280" y2="248" stroke="#43A047" stroke-width="2.5"/>
+  <polygon points="280,248 272,237 283,237" fill="#43A047"/>
+  <line x1="240" y1="270" x2="280" y2="258" stroke="#1E88E5" stroke-width="2.5"/>
+  <polygon points="280,258 271,250 280,248" fill="#1E88E5"/>
+  <line x1="240" y1="440" x2="280" y2="278" stroke="#7B1FA2" stroke-width="2.5"/>
+  <polygon points="280,278 274,267 284,266" fill="#7B1FA2"/>
+
+  <!-- Arrows from service network to providers -->
+  <line x1="640" y1="248" x2="680" y2="110" stroke="#E53935" stroke-width="2.5"/>
+  <polygon points="680,110 674,122 686,120" fill="#E53935"/>
+  <line x1="640" y1="258" x2="680" y2="268" stroke="#FF9800" stroke-width="2.5"/>
+  <polygon points="680,268 671,260 680,258" fill="#FF9800"/>
+  <line x1="640" y1="278" x2="680" y2="440" stroke="#00ACC1" stroke-width="2.5"/>
+  <polygon points="680,440 674,428 686,430" fill="#00ACC1"/>
+
+  <!-- DNS label -->
+  <rect x="330" y="314" width="260" height="48" rx="6" fill="#FFFDE7" stroke="#FBC02D" stroke-width="1.5"/>
+  <text x="348" y="332" font-size="10" font-weight="bold" fill="#F57F17">DNS-based discovery</text>
+  <text x="342" y="348" font-size="9" fill="#555">payments-svc.sn-xxx.vpc-lattice.aws.com</text>
+  <text x="348" y="362" font-size="9" fill="#555">No IP management required</text>
+
+  <!-- Bottom comparison -->
+  <rect x="20" y="526" width="880" height="26" rx="6" fill="#F5F5F5" stroke="#B0BEC5" stroke-width="1"/>
+  <text x="36" y="543" font-size="10" fill="#333">VPC Lattice vs alternatives: L7 mesh → Lattice | L3 routing → TGW/Peering | Single service exposure → PrivateLink | On-prem → VPN/DX</text>
+</svg>

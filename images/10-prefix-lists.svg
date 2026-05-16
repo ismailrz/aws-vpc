@@ -1,0 +1,90 @@
+<svg width="900" height="540" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">Prefix Lists — AWS-Managed &amp; Customer-Managed</text>
+
+  <!-- LEFT: Customer-managed prefix list -->
+  <rect x="20" y="52" width="280" height="250" rx="10" fill="#EDE7F6" stroke="#7B1FA2" stroke-width="2.5"/>
+  <text x="40" y="76" font-size="12" font-weight="bold" fill="#6A1B9A">Customer-Managed Prefix List</text>
+  <text x="40" y="92" font-size="10" fill="#555">pl-0a1b2c3d  |  corp-offices</text>
+
+  <rect x="40" y="104" width="240" height="32" rx="5" fill="#8E24AA"/>
+  <text x="58" y="122" font-size="10" font-weight="bold" fill="white">203.0.113.0/24 — London office</text>
+
+  <rect x="40" y="144" width="240" height="32" rx="5" fill="#9C27B0"/>
+  <text x="58" y="162" font-size="10" font-weight="bold" fill="white">198.51.100.0/24 — NYC office</text>
+
+  <rect x="40" y="184" width="240" height="32" rx="5" fill="#AB47BC"/>
+  <text x="58" y="202" font-size="10" font-weight="bold" fill="white">192.0.2.0/24 — Singapore office</text>
+
+  <rect x="40" y="224" width="240" height="32" rx="5" fill="#BA68C8"/>
+  <text x="58" y="242" font-size="10" font-weight="bold" fill="white">10.100.0.0/16 — Corp VPN range</text>
+
+  <text x="40" y="278" font-size="10" fill="#7B1FA2">Max entries: up to 1,000  |  Shareable via RAM</text>
+  <text x="40" y="294" font-size="10" fill="#7B1FA2">1 rule reference = all entries</text>
+
+  <!-- CENTER: AWS-managed prefix lists -->
+  <rect x="320" y="52" width="260" height="250" rx="10" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2.5"/>
+  <text x="340" y="76" font-size="12" font-weight="bold" fill="#2E7D32">AWS-Managed Prefix Lists</text>
+  <text x="340" y="92" font-size="10" fill="#555">Auto-updated by AWS  |  Read-only</text>
+
+  <rect x="340" y="104" width="220" height="44" rx="5" fill="#43A047"/>
+  <text x="358" y="122" font-size="10" font-weight="bold" fill="white">Amazon S3</text>
+  <text x="358" y="136" font-size="9" fill="#C8E6C9">pl-63a5400a  (all S3 IPs)</text>
+
+  <rect x="340" y="158" width="220" height="44" rx="5" fill="#66BB6A"/>
+  <text x="358" y="176" font-size="10" font-weight="bold" fill="white">Amazon DynamoDB</text>
+  <text x="358" y="190" font-size="9" fill="#C8E6C9">pl-02cd2c6b</text>
+
+  <rect x="340" y="212" width="220" height="44" rx="5" fill="#81C784"/>
+  <text x="358" y="230" font-size="10" font-weight="bold" fill="white">CloudFront Origin-Facing</text>
+  <text x="358" y="244" font-size="9" fill="#C8E6C9">pl-3b927c52  (restrict ALB to CF)</text>
+
+  <text x="340" y="278" font-size="10" fill="#2E7D32">Used by Gateway Endpoints in route tables</text>
+  <text x="340" y="294" font-size="10" fill="#2E7D32">automatically when you create them</text>
+
+  <!-- RIGHT: Usage in SG and Route Table -->
+  <rect x="600" y="52" width="280" height="250" rx="10" fill="#E3F2FD" stroke="#1565C0" stroke-width="2.5"/>
+  <text x="620" y="76" font-size="12" font-weight="bold" fill="#1565C0">How to Reference</text>
+
+  <!-- SG usage -->
+  <rect x="618" y="90" width="244" height="90" rx="6" fill="#BBDEFB" stroke="#1E88E5" stroke-width="1"/>
+  <text x="630" y="108" font-size="10" font-weight="bold" fill="#1565C0">Security Group Rule</text>
+  <text x="630" y="124" font-size="9" fill="#333">Inbound TCP/22  from  pl-0a1b2c3d</text>
+  <text x="630" y="140" font-size="9" fill="#388E3C">✓ Automatically covers all 4 CIDRs</text>
+  <text x="630" y="156" font-size="9" fill="#388E3C">✓ Counts as 1 rule (not 4)</text>
+  <text x="630" y="170" font-size="9" fill="#388E3C">✓ Updates propagate instantly</text>
+
+  <!-- Route table usage -->
+  <rect x="618" y="196" width="244" height="90" rx="6" fill="#BBDEFB" stroke="#1E88E5" stroke-width="1"/>
+  <text x="630" y="214" font-size="10" font-weight="bold" fill="#1565C0">Route Table</text>
+  <text x="630" y="230" font-size="9" fill="#333">Destination: pl-63a5400a (S3)</text>
+  <text x="630" y="246" font-size="9" fill="#333">Target: vpce-xxxxxxxx</text>
+  <text x="630" y="262" font-size="9" fill="#388E3C">✓ Gateway Endpoint adds this automatically</text>
+  <text x="630" y="277" font-size="9" fill="#388E3C">✓ All S3 IPs stay up-to-date</text>
+
+  <!-- Arrows from prefix lists to usage -->
+  <line x1="300" y1="210" x2="600" y2="175" stroke="#7B1FA2" stroke-width="2" stroke-dasharray="6,3"/>
+  <polygon points="600,175 589,172 592,184" fill="#7B1FA2"/>
+  <line x1="580" y1="210" x2="600" y2="230" stroke="#2E7D32" stroke-width="2" stroke-dasharray="6,3"/>
+  <polygon points="600,230 590,224 593,236" fill="#2E7D32"/>
+
+  <!-- Bottom: benefit summary -->
+  <rect x="20" y="322" width="860" height="90" rx="8" fill="#FFFDE7" stroke="#FBC02D" stroke-width="1.5"/>
+  <text x="40" y="344" font-size="12" font-weight="bold" fill="#F57F17">Why Prefix Lists Matter</text>
+  <rect x="40" y="356" width="240" height="44" rx="5" fill="#FFF9C4" stroke="#F9A825" stroke-width="1"/>
+  <text x="50" y="374" font-size="10" font-weight="bold" fill="#333">Single source of truth</text>
+  <text x="50" y="388" font-size="9" fill="#555">Update once → all SGs update instantly</text>
+  <rect x="300" y="356" width="240" height="44" rx="5" fill="#FFF9C4" stroke="#F9A825" stroke-width="1"/>
+  <text x="310" y="374" font-size="10" font-weight="bold" fill="#333">Rule count efficiency</text>
+  <text x="310" y="388" font-size="9" fill="#555">100 CIDRs in a list = 1 SG rule slot used</text>
+  <rect x="560" y="356" width="300" height="44" rx="5" fill="#FFF9C4" stroke="#F9A825" stroke-width="1"/>
+  <text x="570" y="374" font-size="10" font-weight="bold" fill="#333">Cross-account sharing via RAM</text>
+  <text x="570" y="388" font-size="9" fill="#555">Central network team manages; app teams consume</text>
+
+  <!-- Limits table -->
+  <rect x="20" y="426" width="860" height="100" rx="8" fill="#F5F5F5" stroke="#B0BEC5" stroke-width="1.5"/>
+  <text x="40" y="448" font-size="11" font-weight="bold" fill="#455A64">Key Limits</text>
+  <text x="40" y="466" font-size="10" fill="#333">Customer-managed prefix lists per region: 1,000  |  Max entries per list: up to 1,000  |  References per SG rule: 1</text>
+  <text x="40" y="482" font-size="10" fill="#333">SG rule weight: each prefix list reference = (max-entries) toward the 60-inbound/60-outbound rule quota</text>
+  <text x="40" y="498" font-size="10" fill="#555">e.g. a prefix list with max-entries=10 uses 10 slots of your 60-rule limit when referenced in an SG</text>
+  <text x="40" y="514" font-size="10" fill="#C62828">Note: set max-entries to the minimum you need — it determines rule weight, not just current count</text>
+</svg>

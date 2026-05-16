@@ -33,7 +33,7 @@ A comprehensive AWS networking reference covering **Amazon VPC** from first prin
 5. [NAT Gateway & NAT Instance](#5-nat-gateway--nat-instance)
 6. [Security Groups](#6-security-groups)
 7. [Network ACLs (NACLs)](#7-network-acls-nacls)
-8. [VPC Endpoints](#8-vpc-endpoints)
+8. [VPC Endpoints & PrivateLink](#8-vpc-endpoints--privatelink)
 9. [VPC Peering](#9-vpc-peering)
 10. [AWS Transit Gateway (TGW)](#10-aws-transit-gateway-tgw)
 11. [VPN Connections](#11-vpn-connections)
@@ -44,6 +44,13 @@ A comprehensive AWS networking reference covering **Amazon VPC** from first prin
 16. [DNS in VPC](#16-dns-in-vpc)
 17. [High Availability & Multi-AZ Architecture](#17-high-availability--multi-az-architecture)
 18. [CIDR Planning Cheat Sheet](#18-cidr-planning-cheat-sheet)
+19. [Prefix Lists](#19-prefix-lists)
+20. [AWS Network Firewall](#20-aws-network-firewall)
+21. [Gateway Load Balancer (GWLB)](#21-gateway-load-balancer-gwlb)
+22. [Traffic Mirroring](#22-traffic-mirroring)
+23. [VPC Lattice](#23-vpc-lattice)
+24. [Enhanced Networking & MTU](#24-enhanced-networking--mtu)
+25. [VPC Sharing via RAM](#25-vpc-sharing-via-ram)
 
 ---
 
@@ -83,7 +90,7 @@ Think of a VPC as your own private data center network — but running on AWS in
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-![VPC Overview](images/09-aws-vpc.png)
+![AWS VPC Architecture Overview](images/09-aws-vpc.png)
 
 ### Default VPC vs Custom VPC
 
@@ -503,7 +510,7 @@ Your NACL outbound rules must allow this range to permit return traffic for inbo
 
 ---
 
-## 8. VPC Endpoints
+## 8. VPC Endpoints & PrivateLink
 
 ![VPC Endpoints](images/07-vpc-endpoints.svg)
 
@@ -564,8 +571,40 @@ Private Subnet EC2 ──── [VPC local route] ──── S3 Gateway Endpoi
 |----------------------------------------|------------------------------|
 | Private access to S3 or DynamoDB       | Gateway Endpoint (free)      |
 | Private access to any other AWS service| Interface Endpoint           |
-| Share your own service with other VPCs | PrivateLink (Endpoint Service) |
+| Share your own service with other VPCs | PrivateLink Endpoint Service |
 | Reduce NAT GW data costs for S3        | Gateway Endpoint             |
+
+### PrivateLink — Publishing Your Own Endpoint Service
+
+You can expose **your own service** (backed by an NLB or GWLB) to other VPCs or AWS accounts privately via PrivateLink — without VPC peering, TGW, or exposing anything to the internet.
+
+**How it works:**
+1. Deploy your service behind a **Network Load Balancer (NLB)** in your VPC
+2. Create a **VPC Endpoint Service** attached to that NLB
+3. Share the service name (e.g. `com.amazonaws.vpce.us-east-1.vpce-svc-xxxxxxxx`) with consumers
+4. Consumers create an **Interface Endpoint** in their own VPC pointing to your service
+5. Traffic flows privately over AWS backbone — never leaves AWS network
+
+```
+Consumer VPC                        Provider VPC
+┌──────────────────────┐            ┌──────────────────────────────────┐
+│  EC2 / App           │            │  Your Application                │
+│  10.0.1.10           │            │  (EC2 / ECS / EKS)              │
+│         │            │            │         │                        │
+│         ▼            │            │         ▼                        │
+│  Interface Endpoint  │            │  Network Load Balancer           │
+│  (ENI: 10.0.1.50)   │◄──────────►│  (internal)                      │
+│  Private DNS resolves│  AWS       │         │                        │
+│  to endpoint IP      │  backbone  │  VPC Endpoint Service            │
+└──────────────────────┘            │  (com.amazonaws.vpce...)         │
+                                    └──────────────────────────────────┘
+```
+
+**Key properties:**
+- Provider controls access via **allowlist** (specific AWS account IDs or IAM principals)
+- Consumer VPCs can be in **different accounts or regions** (same-region only for PrivateLink)
+- No CIDR overlap restriction — consumers only get an ENI IP, not full VPC routing
+- Used by AWS itself to deliver all Interface Endpoint services
 
 ---
 
@@ -1227,6 +1266,383 @@ Using `/16` per VPC in the `10.x.0.0` space gives you 256 distinct VPCs before y
 
 ---
 
+---
+
+## 19. Prefix Lists
+
+![Prefix Lists](images/10-prefix-lists.svg)
+
+A **Prefix List** is a named set of CIDR blocks that can be referenced in security group rules and route tables — replacing repeated, hard-to-maintain IP lists with a single managed object.
+
+### AWS-Managed Prefix Lists
+
+AWS maintains prefix lists for its own services. You cannot edit them — they update automatically as AWS adds IPs.
+
+| Name                             | ID (us-east-1)    | Use case                              |
+|----------------------------------|-------------------|---------------------------------------|
+| Amazon S3                        | pl-63a5400a       | Allow SG/route traffic to S3          |
+| Amazon DynamoDB                  | pl-02cd2c6b       | Allow SG/route traffic to DynamoDB    |
+| Amazon CloudFront (origin-facing)| pl-3b927c52       | Restrict ALB to CloudFront IPs only   |
+
+These are the same prefix lists that Gateway Endpoints insert into your route table.
+
+### Customer-Managed Prefix Lists
+
+You create and maintain these yourself — useful for:
+- A shared list of your corporate office IP ranges referenced across many SGs
+- A list of trusted partner CIDRs maintained in one place
+- Reducing SG rule count (1 prefix list reference = 1 rule, regardless of how many CIDRs it contains)
+
+**Creating a prefix list:**
+```
+aws ec2 create-managed-prefix-list \
+  --prefix-list-name "corp-offices" \
+  --max-entries 10 \
+  --address-family IPv4
+
+# Add entries
+aws ec2 modify-managed-prefix-list \
+  --prefix-list-id pl-xxxxxxxxx \
+  --add-entries Cidr=203.0.113.0/24,Description="London office" \
+  --add-entries Cidr=198.51.100.0/24,Description="NYC office"
+```
+
+**Referencing in a Security Group rule:**
+```
+aws ec2 authorize-security-group-ingress \
+  --group-id sg-xxxxxxxxx \
+  --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,\
+    PrefixListIds=[{PrefixListId=pl-xxxxxxxxx}]
+```
+
+**Key limits:**
+- Max 1,000 customer-managed prefix lists per region
+- Max entries per list: configurable up to 1,000
+- Each prefix list reference in an SG counts as 1 rule (regardless of list size)
+- Prefix lists can be **shared via AWS RAM** to other accounts
+
+---
+
+## 20. AWS Network Firewall
+
+![AWS Network Firewall](images/11-network-firewall.svg)
+
+**AWS Network Firewall** is a managed, stateful network firewall and intrusion prevention service for VPCs. It sits inline in your traffic path and provides deep packet inspection beyond what Security Groups and NACLs offer.
+
+### Capabilities vs SG / NACL
+
+| Feature                    | Security Group | NACL        | Network Firewall         |
+|----------------------------|----------------|-------------|--------------------------|
+| Layer                      | L4             | L3/L4       | L3–L7                    |
+| Stateful                   | Yes            | No          | Yes (optional)           |
+| Domain/URL filtering       | No             | No          | Yes                      |
+| Protocol detection         | No             | No          | Yes                      |
+| IPS/IDS signatures         | No             | No          | Yes (managed rule groups)|
+| TLS inspection             | No             | No          | Yes                      |
+| Centralized management     | Per VPC        | Per VPC     | Cross-VPC via TGW        |
+
+### Rule Groups
+
+**Stateless rule groups** — evaluated first, no session tracking:
+- Match on src/dst IP, port, protocol
+- Actions: pass, drop, forward to stateful
+
+**Stateful rule groups** — Suricata-compatible rules with session awareness:
+- Domain list rules: allow/deny by FQDN (e.g., block `*.malware.com`)
+- Standard 5-tuple rules with stateful tracking
+- Suricata IPS rules: use AWS-managed threat intelligence rule groups
+
+### Deployment Models
+
+**Distributed** — one firewall per VPC (simple, no extra routing):
+```
+Internet → IGW → Firewall Endpoint → Public Subnet → App
+```
+
+**Centralized** — one firewall VPC, all spoke VPCs route through it via TGW:
+```
+Spoke VPC-A ─┐
+Spoke VPC-B ─┤── TGW ──► Firewall VPC (Network Firewall) ──► IGW
+Spoke VPC-C ─┘
+```
+
+**Combined** — distributed for east-west, centralized for north-south.
+
+### Key Facts
+- Deployed into a **dedicated firewall subnet** per AZ
+- Firewall Endpoint is referenced in route tables (like a NAT GW)
+- Logs (flow, alert) go to S3, CloudWatch Logs, or Kinesis Firehose
+- Pricing: ~$0.395/hr per AZ + $0.065/GB processed
+
+---
+
+## 21. Gateway Load Balancer (GWLB)
+
+![Gateway Load Balancer](images/12-gwlb.svg)
+
+**Gateway Load Balancer** lets you deploy, scale, and manage third-party network virtual appliances (firewalls, IDS/IPS, deep packet inspection tools) inline in your traffic path — transparently, without changing routing in spoke VPCs.
+
+### How It Works
+
+GWLB uses the **GENEVE protocol (port 6081)** to encapsulate packets and forward them to appliance instances, then return them to their original destination — completely transparent to the source and destination.
+
+```
+Client (internet)
+      │
+      ▼
+IGW
+      │  (route table: 0.0.0.0/0 → GWLB Endpoint)
+      ▼
+GWLB Endpoint (in your VPC — acts like a bump-in-the-wire)
+      │  GENEVE encapsulation
+      ▼
+GWLB  ──── scales appliance fleet (Palo Alto, Fortinet, Check Point…)
+      │  inspected + returned
+      ▼
+GWLB Endpoint
+      │
+      ▼
+Application (EC2 / ALB)
+```
+
+### Key Properties
+- **Transparent**: source/destination IPs are preserved through the appliance
+- **Scales**: GWLB health-checks appliances and load-balances across them
+- **Cross-VPC**: GWLB Endpoint (PrivateLink-based) lets spoke VPCs send traffic to a centralized appliance VPC
+- Supports **sticky sessions** — same flow always goes to the same appliance (important for stateful firewalls)
+- Pricing: ~$0.008/hour per GWLB + $0.004/GB
+
+### Use Cases
+| Use case | How GWLB helps |
+|----------|---------------|
+| Third-party NGFW inline | Deploy Palo Alto / Fortinet / Check Point at scale |
+| IDS/IPS without agents | Mirror all traffic through inspection appliance |
+| Compliance inspection | Guaranteed all traffic inspected before reaching app |
+| Centralized security VPC | One appliance fleet serving many spoke VPCs via TGW |
+
+---
+
+## 22. Traffic Mirroring
+
+![Traffic Mirroring](images/13-traffic-mirroring.svg)
+
+**VPC Traffic Mirroring** copies inbound and outbound traffic from an ENI and sends it to a monitoring appliance — without affecting the original traffic flow. Used for intrusion detection, packet capture, and network forensics.
+
+### Components
+
+| Component        | What it is                                                    |
+|------------------|---------------------------------------------------------------|
+| Mirror Source    | The ENI whose traffic you want to capture                     |
+| Mirror Target    | Destination: another ENI or a Network Load Balancer           |
+| Mirror Filter    | Rules specifying which traffic to mirror (src/dst, port, protocol) |
+| Mirror Session   | Ties source + target + filter together, with a priority       |
+
+### Traffic Flow
+
+```
+EC2 Instance (source ENI)
+      │
+      ├──── original traffic continues normally ────► destination
+      │
+      └──── mirrored copy (VXLAN encapsulated, UDP 4789) ──► Mirror Target
+                                                              (IDS appliance / NLB)
+```
+
+Mirrored packets are **VXLAN-encapsulated** — your monitoring tool must be able to decapsulate VXLAN (most modern IDS/IPS tools do).
+
+### Filter Examples
+
+```
+# Mirror only inbound SSH attempts
+Direction: INGRESS
+Protocol: TCP
+Destination port: 22
+Action: ACCEPT
+
+# Mirror all traffic except internal VPC traffic
+Direction: ALL
+Source CIDR: 0.0.0.0/0
+Destination CIDR: 10.0.0.0/8
+Action: REJECT   ← exclude internal
+```
+
+### Key Facts
+- Source and target must be in the **same VPC** or connected via VPC peering / TGW
+- Supported on **Nitro-based instances** only (most current-gen types)
+- NLB as target allows horizontal scaling of monitoring appliances
+- Pricing: ~$0.015/GB of mirrored traffic
+- Does **not** affect latency or throughput of the source instance
+
+---
+
+## 23. VPC Lattice
+
+![VPC Lattice](images/14-vpc-lattice.svg)
+
+**AWS VPC Lattice** (GA 2023) is an application networking service that simplifies service-to-service communication across VPCs and accounts — without requiring VPC peering, TGW, or per-service PrivateLink configurations.
+
+### Core Concepts
+
+| Concept            | Description                                                          |
+|--------------------|----------------------------------------------------------------------|
+| **Service Network**| A logical boundary grouping services and their consumers            |
+| **Service**        | Your application (EC2, ECS, EKS, Lambda) with listener rules        |
+| **Service Directory**| Centrally discover all services in your organization              |
+| **Auth Policy**    | IAM-based access control on the service network or individual service|
+| **Association**    | Links a VPC or service to a service network                         |
+
+### Architecture
+
+```
+Account A — Consumer VPCs                  Account B — Provider Services
+┌────────────────────────────┐            ┌──────────────────────────────────┐
+│  VPC-1 (associated)        │            │  Service: payments-svc           │
+│  ┌─────────────────────┐   │            │  (ECS behind ALB/Lambda)         │
+│  │  App (calls         │   │            └──────────────────────────────────┘
+│  │  payments-svc.vpc-  │   │
+│  │  lattice.aws.com)   │   │            ┌──────────────────────────────────┐
+│  └─────────────────────┘   │            │  Service: inventory-svc          │
+└────────────────────────────┘            │  (EKS)                           │
+                                          └──────────────────────────────────┘
+         │                                              │
+         └──────────── Service Network ────────────────┘
+                       (central hub — cross-account, cross-VPC)
+```
+
+### VPC Lattice vs Alternatives
+
+| Scenario                               | Best choice             |
+|----------------------------------------|-------------------------|
+| L7 service mesh, cross-account         | VPC Lattice             |
+| Simple VPC-to-VPC L3 routing           | VPC Peering / TGW       |
+| Expose one service to many consumers   | PrivateLink             |
+| Full network-level isolation required  | TGW with separate RT    |
+| On-prem to VPC connectivity            | VPN / Direct Connect    |
+
+### Key Facts
+- Supports **HTTP, HTTPS, gRPC** listeners with path/header/method routing rules
+- Auth policies use **AWS SigV4** — services authenticate with IAM roles
+- Built-in **observability**: access logs, CloudWatch metrics per service
+- No IP management, no CIDR planning required — purely DNS-based
+- Pricing: ~$0.025/hr per service network + $0.0025/1,000 requests + $0.025/GB
+
+---
+
+## 24. Enhanced Networking & MTU
+
+![Enhanced Networking & MTU](images/15-enhanced-networking-mtu.svg)
+
+Network performance within a VPC depends on the instance type, network driver, and MTU configuration. Getting these right matters for high-throughput or latency-sensitive workloads.
+
+### Enhanced Networking
+
+AWS supports two enhanced networking technologies:
+
+| Technology              | Driver       | Max Bandwidth  | Supported instances         |
+|-------------------------|--------------|----------------|-----------------------------|
+| **ENA** (Elastic Network Adapter) | `ena` | Up to 200 Gbps | All current-gen (m5, c5, r5, m6i…) |
+| **Intel 82599 VF** (legacy SR-IOV) | `ixgbevf` | Up to 10 Gbps | Older types (c3, c4, r3, i2…) |
+
+**ENA is the standard** for all instances launched after 2016. It provides:
+- Up to 200 Gbps aggregate bandwidth (on `u-*` / `trn1` / `p4d` instances)
+- Low-latency packet processing in hardware (bypasses hypervisor)
+- Jumbo frame support (up to 9,001 bytes MTU)
+
+Check if ENA is enabled:
+```bash
+aws ec2 describe-instances --instance-id i-xxxxxxxxx \
+  --query 'Reservations[].Instances[].EnaSupport'
+# Should return: true
+```
+
+### MTU and Jumbo Frames
+
+**MTU (Maximum Transmission Unit)** is the largest packet size a network path can carry without fragmentation.
+
+| Path                                         | Max MTU     | Notes                              |
+|----------------------------------------------|-------------|------------------------------------|
+| Within the same VPC (same AZ)               | 9,001 bytes | Jumbo frames — full throughput     |
+| Within the same VPC (cross-AZ)              | 9,001 bytes | Jumbo frames supported             |
+| VPC Peering (same region)                   | 9,001 bytes | Jumbo frames supported             |
+| VPC Peering (inter-region)                  | 1,500 bytes | No jumbo frames across regions     |
+| Internet Gateway (to internet)              | 1,500 bytes | Internet standard MTU              |
+| Site-to-Site VPN                            | 1,500 bytes | IPsec overhead reduces effective MTU|
+| Direct Connect                              | 9,001 bytes | Jumbo frames supported             |
+| Transit Gateway                             | 8,500 bytes | Slightly below full jumbo          |
+
+### Path MTU Discovery (PMTUD)
+
+TCP uses PMTUD to detect the smallest MTU along a path and avoid fragmentation. This relies on ICMP Type 3 Code 4 ("Fragmentation Needed") packets being allowed through security groups.
+
+> **Best practice:** Allow ICMP Type 3 (Destination Unreachable) in your security groups to ensure PMTUD works correctly, especially on paths that cross MTU boundaries (e.g., VPC → VPN → on-prem).
+
+### Setting Jumbo Frames on Linux
+
+```bash
+# Check current MTU
+ip link show eth0
+
+# Set jumbo frames (within VPC only)
+sudo ip link set dev eth0 mtu 9001
+
+# Persist across reboots (Amazon Linux 2 / AL2023)
+echo 'MTU=9001' >> /etc/sysconfig/network-scripts/ifcfg-eth0
+```
+
+---
+
+## 25. VPC Sharing via RAM
+
+![VPC Sharing via RAM](images/16-vpc-sharing-ram.svg)
+
+**VPC Sharing** (using AWS Resource Access Manager) lets the VPC owner share **subnets** with other AWS accounts in the same AWS Organization — allowing multiple accounts to launch resources into a centrally managed VPC without each account needing its own VPC.
+
+### How It Works
+
+```
+Network Account (VPC Owner)
+┌────────────────────────────────────────────────────────┐
+│  VPC: 10.0.0.0/16                                      │
+│  ┌──────────────────┐   ┌──────────────────────────┐  │
+│  │ Shared Subnet A  │   │ Shared Subnet B          │  │
+│  │ 10.0.1.0/24      │   │ 10.0.2.0/24              │  │
+│  └────────┬─────────┘   └────────────┬─────────────┘  │
+└───────────┼─────────────────────────-┼────────────────-┘
+            │ RAM Share                │ RAM Share
+            ▼                          ▼
+   App Team Account A          Platform Team Account B
+   (launches EC2, RDS          (launches EKS, Lambda
+    into Subnet A)              into Subnet B)
+```
+
+### Owner vs Participant
+
+| Responsibility          | VPC Owner (Network Acct) | Participant (App Acct)       |
+|-------------------------|--------------------------|------------------------------|
+| VPC, subnets, IGW, NAT  | Creates and manages      | Cannot modify                |
+| Route tables, NACLs     | Creates and manages      | Cannot modify                |
+| Security Groups         | Can create in shared VPC | Creates their own SGs        |
+| EC2, RDS, ECS resources | Cannot see/manage        | Launches and owns            |
+| Billing                 | VPC/networking costs     | Resource (EC2, RDS) costs    |
+
+### VPC Sharing vs Alternatives
+
+| Approach          | Complexity | IP management | Cross-account | Best for                        |
+|-------------------|------------|---------------|---------------|---------------------------------|
+| VPC Sharing (RAM) | Low        | Centralized   | Yes           | Shared platform, cost efficiency|
+| VPC Peering       | Medium     | Distributed   | Yes           | Isolated teams, simple 1:1      |
+| Transit Gateway   | Medium     | Distributed   | Yes           | Many VPCs, hybrid, complex mesh |
+| PrivateLink       | Medium     | N/A           | Yes           | Service exposure only (L7)      |
+
+### Key Facts
+- Participants **see and use** shared subnets as if they owned them
+- Security groups created by participants are **account-scoped** — other accounts cannot reference them by ID (use prefix lists instead)
+- Shared VPC reduces the number of VPCs to manage — fewer NAT Gateways, fewer VPC endpoints, lower overall cost
+- Requires accounts to be in the same **AWS Organization** (or explicitly invited)
+- The VPC owner can revoke sharing at any time — participants' resources in shared subnets continue running but cannot launch new ones
+
+---
+
 ## Quick Reference — Service Limits
 
 | Resource                          | Default Limit       |
@@ -1259,12 +1675,20 @@ Using `/16` per VPC in the `10.x.0.0` space gives you 256 distinct VPCs before y
 | NAT Gateway          | L4 NAT       | Outbound internet for private subnet resources       |
 | Security Group       | L4 stateful  | Instance-level allow rules                           |
 | NACL                 | L3/4 stateless | Subnet-level allow/deny rules                      |
-| VPC Endpoint         | L3 private   | Private access to AWS services                       |
-| VPC Peering          | L3 routing   | Private 1:1 VPC connectivity                        |
+| Prefix List          | L3 addressing | Named reusable CIDR set for SGs and route tables    |
+| VPC Endpoint         | L3 private   | Private access to AWS services (no internet)         |
+| PrivateLink (Svc)    | L4 private   | Publish your own service to other VPCs/accounts      |
+| VPC Peering          | L3 routing   | Private 1:1 VPC connectivity                         |
 | Transit Gateway      | L3 hub       | Multi-VPC + hybrid hub-and-spoke routing             |
 | Site-to-Site VPN     | L3 IPsec     | Encrypted on-prem to VPC over internet               |
 | Direct Connect       | L1/L2 dedicated | Private physical link to AWS                      |
+| Network Firewall     | L3–L7        | Managed stateful firewall + IPS for VPC traffic      |
+| Gateway Load Balancer| L3 transparent | Inline scaling of 3rd-party network appliances     |
+| Traffic Mirroring    | Monitoring   | Copy ENI traffic to IDS/IPS/forensic tools           |
+| VPC Lattice          | L7 service mesh | Cross-account/VPC service-to-service networking  |
 | ENI                  | L2 vNIC      | Virtual network card for EC2 and services            |
 | Elastic IP           | L3 addressing | Static public IPv4 address                          |
 | Flow Logs            | Monitoring   | Traffic metadata capture for analysis                |
 | Route 53 Resolver    | DNS          | VPC-internal DNS with hybrid forwarding              |
+| ENA / Enhanced Net   | L2 hardware  | High-throughput, low-latency instance networking     |
+| VPC Sharing (RAM)    | L3 multi-acct | Share subnets across AWS accounts in an Org         |

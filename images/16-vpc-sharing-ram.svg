@@ -1,0 +1,92 @@
+<svg width="920" height="560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">VPC Sharing via AWS RAM — Centralized Network, Distributed Teams</text>
+
+  <!-- Network Account (VPC Owner) -->
+  <rect x="20" y="52" width="880" height="230" rx="12" fill="#E8F5E9" stroke="#2E7D32" stroke-width="2.5"/>
+  <text x="40" y="76" font-size="13" font-weight="bold" fill="#2E7D32">Network Account (VPC Owner)  —  Account ID: 000000000000</text>
+  <text x="40" y="94" font-size="10" fill="#555">Owns the VPC, subnets, route tables, IGW, NAT GW, VPC Endpoints. Participants CANNOT modify these.</text>
+
+  <!-- VPC label -->
+  <rect x="40" y="106" width="840" height="164" rx="8" fill="#C8E6C9" stroke="#43A047" stroke-width="1.5"/>
+  <text x="58" y="126" font-size="11" font-weight="bold" fill="#1B5E20">VPC: 10.0.0.0/16  (owned by Network Account)</text>
+
+  <!-- Shared Subnet 1 -->
+  <rect x="58" y="138" width="230" height="120" rx="6" fill="#43A047"/>
+  <text x="82" y="158" font-size="11" font-weight="bold" fill="white">Shared Subnet A</text>
+  <text x="68" y="174" font-size="10" fill="#C8E6C9">10.0.1.0/24  |  AZ: us-east-1a</text>
+  <text x="68" y="190" font-size="10" fill="#C8E6C9">Shared to: App Team Account A</text>
+  <rect x="68" y="200" width="208" height="24" rx="4" fill="#1B5E20"/>
+  <text x="86" y="216" font-size="9" fill="white">RAM Share: rs-aaaaaaaa</text>
+  <text x="68" y="242" font-size="9" fill="#A5D6A7">Route: 0.0.0.0/0 → NAT GW (managed here)</text>
+
+  <!-- Shared Subnet 2 -->
+  <rect x="306" y="138" width="230" height="120" rx="6" fill="#66BB6A"/>
+  <text x="332" y="158" font-size="11" font-weight="bold" fill="white">Shared Subnet B</text>
+  <text x="316" y="174" font-size="10" fill="#C8E6C9">10.0.2.0/24  |  AZ: us-east-1b</text>
+  <text x="316" y="190" font-size="10" fill="#C8E6C9">Shared to: Platform Team Account B</text>
+  <rect x="316" y="200" width="208" height="24" rx="4" fill="#1B5E20"/>
+  <text x="334" y="216" font-size="9" fill="white">RAM Share: rs-bbbbbbbb</text>
+  <text x="316" y="242" font-size="9" fill="#A5D6A7">Route: 0.0.0.0/0 → NAT GW (managed here)</text>
+
+  <!-- Shared Subnet 3 -->
+  <rect x="554" y="138" width="230" height="120" rx="6" fill="#81C784"/>
+  <text x="580" y="158" font-size="11" font-weight="bold" fill="white">Shared Subnet C</text>
+  <text x="564" y="174" font-size="10" fill="#C8E6C9">10.0.3.0/24  |  AZ: us-east-1a</text>
+  <text x="564" y="190" font-size="10" fill="#C8E6C9">Shared to: Data Team Account C</text>
+  <rect x="564" y="200" width="208" height="24" rx="4" fill="#1B5E20"/>
+  <text x="580" y="216" font-size="9" fill="white">RAM Share: rs-cccccccc</text>
+  <text x="564" y="242" font-size="9" fill="#A5D6A7">Isolated — no internet route</text>
+
+  <!-- Arrows down to participant accounts -->
+  <line x1="172" y1="282" x2="172" y2="316" stroke="#2E7D32" stroke-width="2.5"/>
+  <polygon points="172,316 166,305 178,305" fill="#2E7D32"/>
+  <text x="180" y="304" font-size="9" fill="#2E7D32">RAM Share</text>
+
+  <line x1="420" y1="282" x2="420" y2="316" stroke="#2E7D32" stroke-width="2.5"/>
+  <polygon points="420,316 414,305 426,305" fill="#2E7D32"/>
+  <text x="428" y="304" font-size="9" fill="#2E7D32">RAM Share</text>
+
+  <line x1="668" y1="282" x2="668" y2="316" stroke="#2E7D32" stroke-width="2.5"/>
+  <polygon points="668,316 662,305 674,305" fill="#2E7D32"/>
+  <text x="676" y="304" font-size="9" fill="#2E7D32">RAM Share</text>
+
+  <!-- Participant Account A -->
+  <rect x="20" y="320" width="280" height="150" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="40" y="342" font-size="12" font-weight="bold" fill="#1565C0">App Team — Account A</text>
+  <text x="40" y="358" font-size="10" fill="#555">111111111111</text>
+  <rect x="40" y="368" width="240" height="44" rx="6" fill="#1E88E5"/>
+  <text x="92" y="388" font-size="10" font-weight="bold" fill="white">EC2 / ECS workloads</text>
+  <text x="56" y="404" font-size="9" fill="#BBDEFB">Launched into Subnet A (10.0.1.x)</text>
+  <text x="40" y="426" font-size="9" fill="#1976D2">&#x2714; Sees Subnet A as its own</text>
+  <text x="40" y="442" font-size="9" fill="#1976D2">&#x2714; Creates its own Security Groups</text>
+  <text x="40" y="458" font-size="9" fill="#C62828">&#x2717; Cannot modify route table / NACL</text>
+
+  <!-- Participant Account B -->
+  <rect x="320" y="320" width="280" height="150" rx="10" fill="#F3E5F5" stroke="#7B1FA2" stroke-width="2"/>
+  <text x="340" y="342" font-size="12" font-weight="bold" fill="#6A1B9A">Platform Team — Account B</text>
+  <text x="340" y="358" font-size="10" fill="#555">222222222222</text>
+  <rect x="340" y="368" width="240" height="44" rx="6" fill="#8E24AA"/>
+  <text x="376" y="388" font-size="10" font-weight="bold" fill="white">EKS cluster / Lambda</text>
+  <text x="352" y="404" font-size="9" fill="#E1BEE7">Launched into Subnet B (10.0.2.x)</text>
+  <text x="340" y="426" font-size="9" fill="#7B1FA2">&#x2714; Pays for EC2 / EKS costs</text>
+  <text x="340" y="442" font-size="9" fill="#7B1FA2">&#x2714; Full IAM control over own resources</text>
+  <text x="340" y="458" font-size="9" fill="#C62828">&#x2717; Cannot see Account A's resources</text>
+
+  <!-- Participant Account C -->
+  <rect x="620" y="320" width="280" height="150" rx="10" fill="#FFF3E0" stroke="#FF6F00" stroke-width="2"/>
+  <text x="640" y="342" font-size="12" font-weight="bold" fill="#E65100">Data Team — Account C</text>
+  <text x="640" y="358" font-size="10" fill="#555">333333333333</text>
+  <rect x="640" y="368" width="240" height="44" rx="6" fill="#FF9800"/>
+  <text x="688" y="388" font-size="10" font-weight="bold" fill="white">RDS / Redshift</text>
+  <text x="652" y="404" font-size="9" fill="#FFF8E1">Launched into Subnet C (10.0.3.x)</text>
+  <text x="640" y="426" font-size="9" fill="#E65100">&#x2714; Isolated subnet — no egress needed</text>
+  <text x="640" y="442" font-size="9" fill="#E65100">&#x2714; Network Account pays for NAT/VPC</text>
+  <text x="640" y="458" font-size="9" fill="#C62828">&#x2717; Must be same AWS Organization</text>
+
+  <!-- Bottom cost/comparison bar -->
+  <rect x="20" y="488" width="880" height="58" rx="8" fill="#FFFDE7" stroke="#FBC02D" stroke-width="1.5"/>
+  <text x="40" y="508" font-size="11" font-weight="bold" fill="#F57F17">Cost Benefit:</text>
+  <text x="160" y="508" font-size="10" fill="#333">3 accounts share 1 NAT GW (~$33/mo) instead of 3 NAT GWs (~$99/mo)  |  1 set of VPC Endpoints instead of 3</text>
+  <text x="40" y="526" font-size="10" fill="#555">Requires: AWS Organizations  |  Accounts must be in same Org  |  Network Account controls topology — participants only control their resources</text>
+  <text x="40" y="540" font-size="9" fill="#888">Note: Participants use Prefix Lists (not SG IDs) to reference other accounts' security groups — cross-account SG ID reference not supported</text>
+</svg>

@@ -1,0 +1,77 @@
+<svg width="900" height="540" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <text x="20" y="30" font-size="17" font-weight="bold" fill="#232F3E">Enhanced Networking &amp; MTU — Performance by Path</text>
+
+  <!-- ENA vs Legacy section -->
+  <rect x="20" y="48" width="420" height="190" rx="10" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="40" y="70" font-size="13" font-weight="bold" fill="#1565C0">Network Driver Comparison</text>
+
+  <!-- ENA -->
+  <rect x="40" y="82" width="180" height="140" rx="8" fill="#1E88E5"/>
+  <text x="82" y="104" font-size="12" font-weight="bold" fill="white">ENA</text>
+  <text x="50" y="122" font-size="10" font-weight="bold" fill="#BBDEFB">Elastic Network Adapter</text>
+  <text x="50" y="140" font-size="10" fill="#BBDEFB">Up to 200 Gbps</text>
+  <text x="50" y="156" font-size="10" fill="#BBDEFB">All current-gen types</text>
+  <text x="50" y="172" font-size="10" fill="#BBDEFB">m5, c5, r5, m6i, c6g…</text>
+  <text x="50" y="188" font-size="10" fill="#BBDEFB">Jumbo frames (9001 MTU)</text>
+  <text x="50" y="204" font-size="10" font-weight="bold" fill="#81D4FA">&#x2713; Recommended</text>
+
+  <!-- Intel VF (legacy) -->
+  <rect x="234" y="82" width="180" height="140" rx="8" fill="#78909C"/>
+  <text x="258" y="104" font-size="12" font-weight="bold" fill="white">Intel 82599 VF</text>
+  <text x="242" y="122" font-size="10" font-weight="bold" fill="#CFD8DC">Legacy SR-IOV</text>
+  <text x="242" y="140" font-size="10" fill="#CFD8DC">Up to 10 Gbps</text>
+  <text x="242" y="156" font-size="10" fill="#CFD8DC">Older types only</text>
+  <text x="242" y="172" font-size="10" fill="#CFD8DC">c3, c4, r3, i2, d2</text>
+  <text x="242" y="188" font-size="10" fill="#CFD8DC">Standard 1500 MTU</text>
+  <text x="242" y="204" font-size="10" fill="#FFCDD2">Deprecated — avoid</text>
+
+  <!-- MTU Path table -->
+  <rect x="460" y="48" width="420" height="190" rx="10" fill="#FFF3E0" stroke="#FF6F00" stroke-width="2"/>
+  <text x="480" y="70" font-size="13" font-weight="bold" fill="#E65100">MTU by Network Path</text>
+
+  <!-- Table header -->
+  <rect x="480" y="80" width="380" height="24" rx="4" fill="#FF9800"/>
+  <text x="490" y="96" font-size="10" font-weight="bold" fill="white">Path                                    Max MTU    Jumbo?</text>
+  <!-- rows -->
+  <rect x="480" y="106" width="380" height="20" fill="#FFF8E1"/>
+  <text x="490" y="120" font-size="9" fill="#333">Within same VPC (same AZ)              9,001      ✓ Yes</text>
+  <rect x="480" y="128" width="380" height="20" fill="#FFECB3"/>
+  <text x="490" y="142" font-size="9" fill="#333">Within same VPC (cross-AZ)             9,001      ✓ Yes</text>
+  <rect x="480" y="150" width="380" height="20" fill="#FFF8E1"/>
+  <text x="490" y="164" font-size="9" fill="#333">VPC Peering (same region)              9,001      ✓ Yes</text>
+  <rect x="480" y="172" width="380" height="20" fill="#FFECB3"/>
+  <text x="490" y="186" font-size="9" fill="#C62828">VPC Peering (inter-region)             1,500      ✗ No</text>
+  <rect x="480" y="194" width="380" height="20" fill="#FFF8E1"/>
+  <text x="490" y="208" font-size="9" fill="#C62828">Internet Gateway (to internet)         1,500      ✗ No</text>
+  <rect x="480" y="216" width="380" height="20" fill="#FFECB3"/>
+  <text x="490" y="230" font-size="9" fill="#C62828">Site-to-Site VPN                       1,500      ✗ No</text>
+
+  <!-- Packet size visual -->
+  <rect x="20" y="256" width="860" height="130" rx="10" fill="#F5F5F5" stroke="#B0BEC5" stroke-width="1.5"/>
+  <text x="40" y="278" font-size="12" font-weight="bold" fill="#455A64">Packet Size Comparison</text>
+
+  <!-- Standard 1500 packet -->
+  <rect x="40" y="292" width="300" height="40" rx="5" fill="#E53935"/>
+  <text x="56" y="316" font-size="10" font-weight="bold" fill="white">Standard Ethernet Frame — 1,500 bytes  (internet, VPN, inter-region peering)</text>
+  <!-- Jumbo 9001 packet -->
+  <rect x="40" y="342" width="828" height="30" rx="5" fill="#43A047"/>
+  <text x="56" y="362" font-size="10" font-weight="bold" fill="white">Jumbo Frame — 9,001 bytes  (within VPC, same-region peering, Direct Connect)  — 6x more data per packet, lower CPU overhead</text>
+
+  <!-- Path MTU Discovery box -->
+  <rect x="20" y="404" width="420" height="120" rx="10" fill="#E8F5E9" stroke="#43A047" stroke-width="1.5"/>
+  <text x="40" y="424" font-size="12" font-weight="bold" fill="#2E7D32">Path MTU Discovery (PMTUD)</text>
+  <text x="40" y="444" font-size="10" fill="#333">TCP uses PMTUD to find the smallest MTU along a path</text>
+  <text x="40" y="460" font-size="10" fill="#333">and avoid IP fragmentation. It relies on ICMP Type 3</text>
+  <text x="40" y="476" font-size="10" fill="#333">Code 4 "Fragmentation Needed" messages.</text>
+  <text x="40" y="496" font-size="10" font-weight="bold" fill="#C62828">Required SG rule: allow ICMP Type 3 inbound</text>
+  <text x="40" y="512" font-size="9" fill="#555">Without it: silent packet drops on paths that cross MTU boundaries</text>
+
+  <!-- Linux MTU commands -->
+  <rect x="460" y="404" width="420" height="120" rx="10" fill="#E8EAF6" stroke="#3F51B5" stroke-width="1.5"/>
+  <text x="480" y="424" font-size="12" font-weight="bold" fill="#283593">Configure Jumbo Frames (Linux)</text>
+  <rect x="480" y="434" width="380" height="80" rx="6" fill="#1A237E"/>
+  <text x="492" y="452" font-size="9" fill="#69F0AE" font-family="monospace"># Check current MTU</text>
+  <text x="492" y="468" font-size="9" fill="white" font-family="monospace">ip link show eth0</text>
+  <text x="492" y="484" font-size="9" fill="#69F0AE" font-family="monospace"># Enable jumbo frames</text>
+  <text x="492" y="500" font-size="9" fill="white" font-family="monospace">sudo ip link set dev eth0 mtu 9001</text>
+</svg>
